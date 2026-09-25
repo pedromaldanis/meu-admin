@@ -1,0 +1,401 @@
+/* =====================================================================
+   Painel Pedro Maldanis
+   Paleta da FICHA: principal #00FFCD, fundo #071651, fonte Poppins.
+   ===================================================================== */
+
+:root {
+  --cor: #00ffcd;
+  --cor-hover: #3dffd9;
+  --cor-suave: rgba(0, 255, 205, 0.12);
+  --cor-texto-sobre: #071651;
+
+  --fundo: #071651;
+  --fundo-2: #050f3d;        /* barra lateral */
+  --card: #0c1f68;
+  --card-2: #102780;         /* hover, inputs */
+  --borda: rgba(255, 255, 255, 0.09);
+  --borda-forte: rgba(255, 255, 255, 0.18);
+
+  --texto: #eef3ff;
+  --texto-2: #a9b6dd;
+  --texto-3: #7584b3;
+
+  --ok: #2ee59d;
+  --aviso: #ffc857;
+  --erro: #ff6b81;
+  --info: #6fa8ff;
+
+  --raio: 16px;
+  --raio-p: 10px;
+  --sombra: 0 10px 30px rgba(0, 0, 0, 0.28);
+  --lateral: 248px;
+  --fonte: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--fonte);
+  background: var(--fundo);
+  color: var(--texto);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--cor); }
+h1, h2, h3, h4 { margin: 0; line-height: 1.25; font-weight: 600; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+::selection { background: var(--cor); color: var(--cor-texto-sobre); }
+
+/* Enquanto confere o login, não mostra nada */
+body.carregando .app { visibility: hidden; }
+body.carregando::after {
+  content: "";
+  position: fixed; inset: 50% auto auto 50%;
+  width: 36px; height: 36px; margin: -18px 0 0 -18px;
+  border: 3px solid var(--cor-suave); border-top-color: var(--cor);
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* ---------------------------------------------------------------------
+   Botões
+   --------------------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-weight: 500; font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, transform 0.05s, opacity 0.15s;
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primario { background: var(--cor); color: var(--cor-texto-sobre); font-weight: 600; }
+.btn-primario:hover:not(:disabled) { background: var(--cor-hover); }
+.btn-secundario { background: var(--card-2); border-color: var(--borda-forte); color: var(--texto); }
+.btn-secundario:hover:not(:disabled) { border-color: var(--cor); }
+.btn-fantasma { background: transparent; color: var(--texto-2); }
+.btn-fantasma:hover:not(:disabled) { color: var(--texto); background: rgba(255, 255, 255, 0.05); }
+.btn-perigo { background: transparent; border-color: rgba(255, 107, 129, 0.4); color: var(--erro); }
+.btn-perigo:hover:not(:disabled) { background: rgba(255, 107, 129, 0.1); }
+.btn-p { padding: 6px 12px; font-size: 13px; }
+.btn-bloco { width: 100%; }
+.btn.carregando { position: relative; color: transparent !important; pointer-events: none; }
+.btn.carregando::after {
+  content: ""; position: absolute; width: 16px; height: 16px;
+  border: 2px solid currentColor; border-color: var(--cor-texto-sobre) transparent var(--cor-texto-sobre) transparent;
+  border-radius: 50%; animation: girar 0.7s linear infinite;
+}
+
+/* ---------------------------------------------------------------------
+   Badges
+   --------------------------------------------------------------------- */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 500; white-space: nowrap;
+  background: rgba(255, 255, 255, 0.08); color: var(--texto-2);
+}
+.badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.badge.sem-ponto::before { display: none; }
+.badge-ok { background: rgba(46, 229, 157, 0.14); color: var(--ok); }
+.badge-aviso { background: rgba(255, 200, 87, 0.14); color: var(--aviso); }
+.badge-erro { background: rgba(255, 107, 129, 0.14); color: var(--erro); }
+.badge-info { background: rgba(111, 168, 255, 0.14); color: var(--info); }
+.badge-cor { background: var(--cor-suave); color: var(--cor); }
+
+/* ---------------------------------------------------------------------
+   Estrutura: barra lateral + conteúdo
+   --------------------------------------------------------------------- */
+.app { display: flex; min-height: 100vh; }
+
+.lateral {
+  position: fixed; inset: 0 auto 0 0;
+  width: var(--lateral);
+  background: var(--fundo-2);
+  border-right: 1px solid var(--borda);
+  display: flex; flex-direction: column;
+  padding: 22px 14px;
+  z-index: 30;
+}
+.marca { display: flex; align-items: center; gap: 12px; padding: 0 8px 22px; }
+.marca-logo {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--cor); color: var(--cor-texto-sobre);
+  display: grid; place-items: center; font-weight: 700; font-size: 16px;
+  flex-shrink: 0;
+}
+.marca-nome { font-weight: 600; font-size: 15px; }
+.marca-sub { font-size: 12px; color: var(--texto-3); }
+
+.menu { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.menu button {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 11px 14px;
+  background: none; border: 0; border-radius: 12px;
+  color: var(--texto-2); font-size: 14px; font-weight: 500; text-align: left;
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.menu button .emoji { font-size: 18px; width: 22px; text-align: center; }
+.menu button:hover { background: rgba(255, 255, 255, 0.05); color: var(--texto); }
+.menu button.ativo { background: var(--cor-suave); color: var(--cor); }
+
+.lateral-rodape { border-top: 1px solid var(--borda); padding-top: 14px; display: grid; gap: 10px; }
+.usuario { display: flex; align-items: center; gap: 10px; padding: 0 6px; min-width: 0; }
+.avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--card-2); color: var(--cor);
+  display: grid; place-items: center; font-weight: 600; font-size: 13px; flex-shrink: 0;
+}
+.usuario-info { min-width: 0; }
+.usuario-nome { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.usuario-email { font-size: 11px; color: var(--texto-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.principal { flex: 1; margin-left: var(--lateral); min-width: 0; }
+
+.topo {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 32px;
+  background: rgba(7, 22, 81, 0.88);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--borda);
+}
+.topo-titulo { font-weight: 600; font-size: 15px; flex: 1; }
+.topo-ola { color: var(--texto-2); font-size: 14px; }
+.topo-ola strong { color: var(--texto); font-weight: 600; }
+.btn-menu { display: none; background: none; border: 0; font-size: 22px; cursor: pointer; padding: 4px 8px; color: var(--texto); }
+
+.conteudo { padding: 32px; max-width: 1280px; margin: 0 auto; }
+
+/* ---------------------------------------------------------------------
+   Abas
+   --------------------------------------------------------------------- */
+.aba { display: none; }
+.aba.ativa { display: block; animation: surgir 0.2s ease-out; }
+@keyframes surgir { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.cabecalho-aba {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.cabecalho-aba h1 { font-size: 28px; display: flex; align-items: center; gap: 12px; }
+.cabecalho-aba p { color: var(--texto-2); margin-top: 6px; max-width: 620px; }
+.cabecalho-acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.secao { margin-top: 32px; }
+.secao-titulo { font-size: 17px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.secao-sub { color: var(--texto-2); font-size: 14px; margin: -8px 0 16px; }
+
+/* ---------------------------------------------------------------------
+   Cards
+   --------------------------------------------------------------------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 22px;
+}
+.grade { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.grade-2 { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.card-numero .rotulo { font-size: 13px; color: var(--texto-2); display: flex; align-items: center; gap: 6px; }
+.card-numero .numero { font-size: 34px; font-weight: 700; margin-top: 8px; letter-spacing: -0.02em; }
+.card-numero .variacao { font-size: 13px; margin-top: 4px; color: var(--texto-3); }
+
+.card-integracao { display: flex; flex-direction: column; gap: 14px; }
+.card-integracao-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.card-integracao-nome { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; }
+.card-integracao-nome .emoji {
+  width: 40px; height: 40px; border-radius: 12px; background: var(--card-2);
+  display: grid; place-items: center; font-size: 20px;
+}
+.card-integracao-resumo { color: var(--texto-2); font-size: 14px; }
+.lista-secrets { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.lista-secrets li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; }
+.lista-secrets code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px;
+  background: rgba(255, 255, 255, 0.06); padding: 1px 6px; border-radius: 6px;
+}
+.lista-secrets .dica { color: var(--texto-3); font-size: 12px; display: block; margin-top: 2px; }
+.lista-secrets .opcional { color: var(--texto-3); font-size: 11px; margin-left: 4px; }
+
+.esqueleto {
+  background: linear-gradient(90deg, var(--card) 0%, var(--card-2) 50%, var(--card) 100%);
+  background-size: 200% 100%;
+  animation: brilho 1.2s ease-in-out infinite;
+  border-radius: var(--raio); min-height: 200px;
+}
+@keyframes brilho { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* ---------------------------------------------------------------------
+   Estado vazio
+   --------------------------------------------------------------------- */
+.vazio {
+  text-align: center;
+  padding: 56px 24px;
+  border: 1px dashed var(--borda-forte);
+  border-radius: var(--raio);
+  background: rgba(255, 255, 255, 0.02);
+}
+.vazio .vazio-emoji { font-size: 44px; line-height: 1; }
+.vazio h3 { margin-top: 14px; font-size: 18px; }
+.vazio p { color: var(--texto-2); margin: 8px auto 20px; max-width: 460px; }
+
+.aviso {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 14px 16px; border-radius: var(--raio-p);
+  background: rgba(255, 200, 87, 0.1); border: 1px solid rgba(255, 200, 87, 0.3);
+  color: var(--texto); font-size: 14px;
+}
+.aviso.info { background: rgba(111, 168, 255, 0.1); border-color: rgba(111, 168, 255, 0.3); }
+.aviso.erro { background: rgba(255, 107, 129, 0.1); border-color: rgba(255, 107, 129, 0.3); }
+
+/* ---------------------------------------------------------------------
+   Formulários
+   --------------------------------------------------------------------- */
+.campo { display: grid; gap: 6px; }
+.campo label { font-size: 13px; font-weight: 500; color: var(--texto-2); }
+.campo .ajuda { font-size: 12px; color: var(--texto-3); }
+.input, .select, .textarea {
+  width: 100%;
+  background: var(--fundo-2);
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--raio-p);
+  padding: 11px 14px;
+  color: var(--texto);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input::placeholder, .textarea::placeholder { color: var(--texto-3); }
+.input:focus, .select:focus, .textarea:focus { border-color: var(--cor); box-shadow: 0 0 0 3px var(--cor-suave); }
+.textarea { min-height: 110px; resize: vertical; }
+.form-grade { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.form-grade .inteiro { grid-column: 1 / -1; }
+.form-acoes { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+/* ---------------------------------------------------------------------
+   Tabelas (viram cards no celular)
+   --------------------------------------------------------------------- */
+.tabela-caixa { background: var(--card); border: 1px solid var(--borda); border-radius: var(--raio); overflow: hidden; }
+.tabela-ferramentas { display: flex; gap: 10px; padding: 14px; border-bottom: 1px solid var(--borda); flex-wrap: wrap; }
+.tabela-ferramentas .input { max-width: 320px; }
+.tabela { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tabela th {
+  text-align: left; font-weight: 500; font-size: 12px; color: var(--texto-3);
+  text-transform: uppercase; letter-spacing: 0.04em;
+  padding: 12px 16px; border-bottom: 1px solid var(--borda);
+  cursor: pointer; user-select: none; white-space: nowrap;
+}
+.tabela th[data-ordem="asc"]::after { content: " ↑"; color: var(--cor); }
+.tabela th[data-ordem="desc"]::after { content: " ↓"; color: var(--cor); }
+.tabela td { padding: 12px 16px; border-bottom: 1px solid var(--borda); vertical-align: middle; }
+.tabela tr:last-child td { border-bottom: 0; }
+.tabela tbody tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+/* ---------------------------------------------------------------------
+   Toast
+   --------------------------------------------------------------------- */
+.toasts {
+  position: fixed; right: 20px; bottom: 20px; z-index: 100;
+  display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  background: var(--card-2); color: var(--texto);
+  border: 1px solid var(--borda-forte); border-left: 4px solid var(--cor);
+  padding: 12px 18px; border-radius: 12px; box-shadow: var(--sombra);
+  font-size: 14px; font-weight: 500; max-width: 360px;
+  animation: toastEntra 0.2s ease-out;
+}
+.toast.erro { border-left-color: var(--erro); }
+.toast.aviso { border-left-color: var(--aviso); }
+.toast.saindo { opacity: 0; transform: translateY(8px); transition: 0.25s; }
+@keyframes toastEntra { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ---------------------------------------------------------------------
+   Modal
+   --------------------------------------------------------------------- */
+.modal-fundo {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(2, 8, 30, 0.7);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  display: grid; place-items: center; padding: 16px;
+  animation: surgir 0.15s ease-out;
+}
+.modal {
+  width: 100%; max-width: 560px; max-height: calc(100vh - 32px);
+  display: flex; flex-direction: column;
+  background: var(--card); border: 1px solid var(--borda-forte);
+  border-radius: 20px; box-shadow: var(--sombra);
+}
+.modal-grande { max-width: 900px; }
+.modal-cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 22px 0; }
+.modal-cabecalho h2 { font-size: 18px; }
+.modal-fechar { background: none; border: 0; color: var(--texto-2); font-size: 22px; cursor: pointer; line-height: 1; padding: 4px; }
+.modal-corpo { padding: 18px 22px; overflow-y: auto; }
+.modal-rodape { display: flex; justify-content: flex-end; gap: 10px; padding: 0 22px 20px; flex-wrap: wrap; }
+
+/* ---------------------------------------------------------------------
+   Login
+   --------------------------------------------------------------------- */
+.login-pagina {
+  min-height: 100vh; display: grid; place-items: center; padding: 16px;
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(0, 255, 205, 0.16), transparent 60%),
+    radial-gradient(700px 500px at -10% 110%, rgba(111, 168, 255, 0.14), transparent 60%),
+    var(--fundo);
+}
+.login-card { width: 100%; max-width: 400px; padding: 34px 28px; }
+.login-card .marca { padding: 0 0 26px; }
+.login-card h1 { font-size: 24px; }
+.login-card > p { color: var(--texto-2); margin: 6px 0 24px; }
+.login-card form { display: grid; gap: 16px; }
+.login-rodape { margin-top: 22px; text-align: center; font-size: 12px; color: var(--texto-3); }
+
+.muted { color: var(--texto-2); }
+.pequeno { font-size: 13px; }
+.linha { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.oculto { display: none !important; }
+
+/* ---------------------------------------------------------------------
+   Celular
+   --------------------------------------------------------------------- */
+.lateral-fundo { display: none; }
+
+@media (max-width: 900px) {
+  .lateral { transform: translateX(-100%); transition: transform 0.25s ease; box-shadow: var(--sombra); }
+  body.menu-aberto .lateral { transform: none; }
+  body.menu-aberto .lateral-fundo {
+    display: block; position: fixed; inset: 0; z-index: 25; background: rgba(2, 8, 30, 0.6);
+  }
+  .principal { margin-left: 0; }
+  .btn-menu { display: inline-block; }
+  .topo { padding: 12px 16px; }
+  .topo-ola { display: none; }
+  .conteudo { padding: 20px 16px 40px; }
+  .cabecalho-aba h1 { font-size: 23px; }
+  .cabecalho-acoes { width: 100%; }
+  .cabecalho-acoes .btn { flex: 1; }
+  .grade-2, .form-grade { grid-template-columns: 1fr; }
+  .card { padding: 18px; }
+  .card-numero .numero { font-size: 28px; }
+
+  /* tabela vira lista de cards */
+  .tabela thead { display: none; }
+  .tabela, .tabela tbody, .tabela tr, .tabela td { display: block; width: 100%; }
+  .tabela tr { padding: 12px 14px; border-bottom: 1px solid var(--borda); }
+  .tabela td { border: 0; padding: 4px 0; display: flex; justify-content: space-between; gap: 12px; text-align: right; }
+  .tabela td::before { content: attr(data-label); color: var(--texto-3); font-size: 12px; text-align: left; flex-shrink: 0; }
+  .tabela-ferramentas .input { max-width: none; }
+
+  .toasts { left: 16px; right: 16px; align-items: stretch; }
+  .toast { max-width: none; }
+}

@@ -1,0 +1,9 @@
+# Configuração das Edge Functions.
+# verify_jwt = true  -> chamada pelo PAINEL (precisa de login)
+# verify_jwt = false -> chamada por CRON ou WEBHOOK (valida x-sched-key ou assinatura)
+# ATENÇÃO: as de cron/webhook TAMBÉM precisam do --no-verify-jwt no deploy.
+
+project_id = "meu-admin"
+
+[functions.status-integracoes]
+verify_jwt = true

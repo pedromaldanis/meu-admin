@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel · Pedro Maldanis</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2300FFCD'/><text x='50' y='64' font-size='46' font-family='Arial' font-weight='700' text-anchor='middle' fill='%23071651'>PM</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="carregando">
+  <div class="app">
+
+    <!-- ============================ BARRA LATERAL ============================ -->
+    <aside class="lateral" id="lateral">
+      <div class="marca">
+        <div class="marca-logo">PM</div>
+        <div>
+          <div class="marca-nome">Pedro Maldanis</div>
+          <div class="marca-sub">@pedromaldanis</div>
+        </div>
+      </div>
+
+      <nav class="menu" aria-label="Abas do painel">
+        <button data-tab="disparo"><span class="emoji">📧</span> Disparo</button>
+        <button data-tab="automacao"><span class="emoji">🤖</span> Automação</button>
+        <button data-tab="instagram"><span class="emoji">📊</span> Instagram</button>
+        <button data-tab="criativos"><span class="emoji">💡</span> Criativos</button>
+        <button data-tab="configuracoes"><span class="emoji">⚙️</span> Configurações</button>
+      </nav>
+
+      <div class="lateral-rodape">
+        <div class="usuario">
+          <div class="avatar" id="usuario-avatar">PM</div>
+          <div class="usuario-info">
+            <div class="usuario-nome" id="usuario-nome">...</div>
+            <div class="usuario-email" id="usuario-email"></div>
+          </div>
+        </div>
+        <button class="btn btn-fantasma btn-bloco" id="btn-sair">🚪 Sair</button>
+      </div>
+    </aside>
+    <div class="lateral-fundo" id="lateral-fundo"></div>
+
+    <!-- ============================ CONTEÚDO ============================ -->
+    <div class="principal">
+      <header class="topo">
+        <button class="btn-menu" id="btn-menu" aria-label="Abrir menu">☰</button>
+        <div class="topo-titulo" id="topo-titulo">Painel</div>
+        <div class="topo-ola">Oi, <strong id="topo-nome">Pedro</strong> 👋</div>
+      </header>
+
+      <main class="conteudo">
+
+        <!-- ============================ 📧 DISPARO ============================ -->
+        <section class="aba" data-aba="disparo" data-titulo="📧 Disparo">
+          <div class="cabecalho-aba">
+            <div>
+              <h1>📧 Disparo de e-mails</h1>
+              <p>Escreva, teste e envie pra sua base. Agende pra depois e acompanhe quem abriu e clicou.</p>
+            </div>
+            <div class="cabecalho-acoes">
+              <button class="btn btn-secundario" data-em-breve="2">👥 Contatos</button>
+              <button class="btn btn-primario" data-em-breve="2">✉️ Novo disparo</button>
+            </div>
+          </div>
+          <div class="grade">
+            <div class="card card-numero"><div class="rotulo">👥 Contatos</div><div class="numero">0</div><div class="variacao">na base</div></div>
+            <div class="card card-numero"><div class="rotulo">📤 Enviados em 30 dias</div><div class="numero">0</div><div class="variacao">e-mails</div></div>
+            <div class="card card-numero"><div class="rotulo">👀 Taxa de abertura</div><div class="numero">-</div><div class="variacao">liga com o webhook da Resend</div></div>
+            <div class="card card-numero"><div class="rotulo">⏰ Agendados</div><div class="numero">0</div><div class="variacao">na fila</div></div>
+          </div>
+          <div class="secao">
+            <div class="vazio">
+              <div class="vazio-emoji">📭</div>
+              <h3>Nada por aqui ainda.</h3>
+              <p>Que tal importar seus contatos e mandar o primeiro e-mail de teste pra você mesmo? Isso chega na FASE 2.</p>
+              <button class="btn btn-primario" data-em-breve="2">✉️ Criar meu primeiro disparo</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================ 🤖 AUTOMAÇÃO ============================ -->
+        <section class="aba" data-aba="automacao" data-titulo="🤖 Automação">
+          <div class="cabecalho-aba">
+            <div>
+              <h1>🤖 Automação do Instagram</h1>
+              <p>Comentou a palavra-chave, recebe a DM. Com botões, arquivos, atraso e captura de e-mail.</p>
+            </div>
+            <div class="cabecalho-acoes">
+              <button class="btn btn-secundario" data-em-breve="3">🧲 Leads</button>
+              <button class="btn btn-primario" data-em-breve="3">➕ Nova automação</button>
+            </div>
+          </div>
+          <div class="grade">
+            <div class="card card-numero"><div class="rotulo">⚡ Automações ativas</div><div class="numero">0</div></div>
+            <div class="card card-numero"><div class="rotulo">🧲 Leads</div><div class="numero">0</div></div>
+            <div class="card card-numero"><div class="rotulo">📨 DMs hoje</div><div class="numero">0</div><div class="variacao">limite diário: 150</div></div>
+          </div>
+          <div class="secao">
+            <div class="vazio">
+              <div class="vazio-emoji">🤖</div>
+              <h3>Nenhuma automação ainda.</h3>
+              <p>Que tal criar a primeira? Ex.: quem comentar "QUERO" no seu próximo reel recebe o link na DM. Isso chega na FASE 3.</p>
+              <button class="btn btn-primario" data-em-breve="3">➕ Criar automação</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================ 📊 INSTAGRAM ============================ -->
+        <section class="aba" data-aba="instagram" data-titulo="📊 Instagram">
+          <div class="cabecalho-aba">
+            <div>
+              <h1>📊 Revisão do Instagram</h1>
+              <p>Seus números, seus melhores posts, o que o público pergunta e uma revisão diária do que fazer hoje.</p>
+            </div>
+            <div class="cabecalho-acoes">
+              <button class="btn btn-secundario" data-em-breve="4">📝 Revisão do dia</button>
+              <button class="btn btn-primario" data-em-breve="4">🔄 Atualizar dados</button>
+            </div>
+          </div>
+          <div class="grade">
+            <div class="card card-numero"><div class="rotulo">👁️ Alcance</div><div class="numero">-</div><div class="variacao">últimos 30 dias</div></div>
+            <div class="card card-numero"><div class="rotulo">👥 Seguidores</div><div class="numero">-</div><div class="variacao">variação no período</div></div>
+            <div class="card card-numero"><div class="rotulo">▶️ Views</div><div class="numero">-</div></div>
+            <div class="card card-numero"><div class="rotulo">💬 Interações</div><div class="numero">-</div></div>
+            <div class="card card-numero"><div class="rotulo">🔖 Salvamentos</div><div class="numero">-</div></div>
+            <div class="card card-numero"><div class="rotulo">📈 Engajamento</div><div class="numero">-</div></div>
+          </div>
+          <div class="secao">
+            <div class="vazio">
+              <div class="vazio-emoji">📊</div>
+              <h3>Ainda sem dados.</h3>
+              <p>Que tal conectar o Instagram primeiro? Depois é só clicar em Atualizar pra ver alcance, seguidores e os melhores posts. Isso chega na FASE 4.</p>
+              <button class="btn btn-secundario" data-ir-aba="configuracoes">⚙️ Ver integrações</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================ 💡 CRIATIVOS ============================ -->
+        <section class="aba" data-aba="criativos" data-titulo="💡 Criativos">
+          <div class="cabecalho-aba">
+            <div>
+              <h1>💡 Criativos e ideias</h1>
+              <p>Quadro de ideias, roteiros cena a cena, carrosséis prontos pra baixar e referências transcritas.</p>
+            </div>
+            <div class="cabecalho-acoes">
+              <button class="btn btn-secundario" data-em-breve="5">✨ Gerar ideias</button>
+              <button class="btn btn-primario" data-em-breve="5">➕ Nova ideia</button>
+            </div>
+          </div>
+          <div class="secao">
+            <div class="vazio">
+              <div class="vazio-emoji">💡</div>
+              <h3>Seu quadro está vazio.</h3>
+              <p>Que tal anotar aquela ideia que está na sua cabeça desde ontem? O quadro de ideias chega na FASE 5.</p>
+              <button class="btn btn-primario" data-em-breve="5">➕ Anotar ideia</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================ ⚙️ CONFIGURAÇÕES ============================ -->
+        <section class="aba" data-aba="configuracoes" data-titulo="⚙️ Configurações">
+          <div class="cabecalho-aba">
+            <div>
+              <h1>⚙️ Configurações</h1>
+              <p>Status das integrações e os seus dados padrão. Nenhuma chave aparece aqui, só se está configurada ou não.</p>
+            </div>
+            <div class="cabecalho-acoes">
+              <button class="btn btn-primario" id="btn-verificar">🔄 Verificar integrações</button>
+            </div>
+          </div>
+
+          <div class="secao" style="margin-top:0">
+            <h2 class="secao-titulo">🔌 Integrações</h2>
+            <p class="secao-sub" id="verificado-em">Verificando...</p>
+            <div class="grade" id="cards-integracoes">
+              <div class="esqueleto"></div><div class="esqueleto"></div><div class="esqueleto"></div><div class="esqueleto"></div>
+            </div>
+          </div>
+
+          <div class="secao">
+            <h2 class="secao-titulo">🧾 Meus dados</h2>
+            <p class="secao-sub">Usados nos e-mails, nos testes e nas automações.</p>
+            <form class="card" id="form-config">
+              <div class="form-grade">
+                <div class="campo">
+                  <label for="cfg-nome_exibicao">Nome de exibição</label>
+                  <input class="input" id="cfg-nome_exibicao" name="nome_exibicao" placeholder="Pedro Maldanis">
+                </div>
+                <div class="campo">
+                  <label for="cfg-instagram_usuario">Meu Instagram</label>
+                  <input class="input" id="cfg-instagram_usuario" name="instagram_usuario" placeholder="pedromaldanis">
+                  <span class="ajuda">Sem o @.</span>
+                </div>
+                <div class="campo">
+                  <label for="cfg-remetente_nome">Nome do remetente</label>
+                  <input class="input" id="cfg-remetente_nome" name="remetente_nome" placeholder="Pedro Maldanis">
+                </div>
+                <div class="campo">
+                  <label for="cfg-remetente_email">E-mail do remetente</label>
+                  <input class="input" id="cfg-remetente_email" name="remetente_email" type="email" placeholder="pedro@pedromaldanis.com.br">
+                  <span class="ajuda">Precisa ser do domínio verificado na Resend.</span>
+                </div>
+                <div class="campo">
+                  <label for="cfg-reply_to">Responder para (reply-to)</label>
+                  <input class="input" id="cfg-reply_to" name="reply_to" type="email" placeholder="pedro@pedromaldanis.com.br">
+                </div>
+                <div class="campo">
+                  <label for="cfg-email_teste">E-mail de teste</label>
+                  <input class="input" id="cfg-email_teste" name="email_teste" type="email" placeholder="pedro@pedromaldanis.com.br">
+                  <span class="ajuda">Pra onde vai o botão 🧪 Teste.</span>
+                </div>
+                <div class="campo inteiro">
+                  <label for="cfg-ig_conta_teste">Conta do Instagram de TESTE</label>
+                  <input class="input" id="cfg-ig_conta_teste" name="ig_conta_teste" placeholder="outro perfil, sem o @">
+                  <span class="ajuda">Tem que ser um perfil DIFERENTE do seu: a automação ignora comentários da própria conta.</span>
+                </div>
+              </div>
+              <div class="form-acoes">
+                <button class="btn btn-primario" type="submit" id="btn-salvar-config">💾 Salvar</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="secao">
+            <h2 class="secao-titulo">👤 Minha conta</h2>
+            <div class="card linha" style="justify-content:space-between">
+              <div>
+                <div id="conta-email" style="font-weight:500">...</div>
+                <div class="muted pequeno">Pra trocar a senha: Supabase > Authentication > Users > Send password recovery.</div>
+              </div>
+              <span class="badge badge-cor">admin</span>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/abas/configuracoes.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

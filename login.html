@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Entrar · Painel Pedro Maldanis</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2300FFCD'/><text x='50' y='64' font-size='46' font-family='Arial' font-weight='700' text-anchor='middle' fill='%23071651'>PM</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <main class="login-pagina">
+    <div class="card login-card">
+      <div class="marca">
+        <div class="marca-logo">PM</div>
+        <div>
+          <div class="marca-nome">Pedro Maldanis</div>
+          <div class="marca-sub">Painel do creator</div>
+        </div>
+      </div>
+
+      <h1>Oi, Pedro 👋</h1>
+      <p>Entre pra operar e-mails, Instagram e ideias.</p>
+
+      <div id="aviso" class="aviso erro oculto" role="alert"></div>
+
+      <form id="form-login" novalidate>
+        <div class="campo">
+          <label for="email">E-mail</label>
+          <input class="input" id="email" type="email" autocomplete="username" required placeholder="voce@email.com">
+        </div>
+        <div class="campo">
+          <label for="senha">Senha</label>
+          <input class="input" id="senha" type="password" autocomplete="current-password" required placeholder="••••••••">
+        </div>
+        <button class="btn btn-primario btn-bloco" id="btn-entrar" type="submit">Entrar ✨</button>
+      </form>
+
+      <div class="login-rodape">Acesso restrito. Sem cadastro público.</div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>
