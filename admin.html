@@ -245,22 +245,110 @@
               <p>Comentou a palavra-chave, recebe a DM. Com botões, arquivos, atraso e captura de e-mail.</p>
             </div>
             <div class="cabecalho-acoes">
-              <button class="btn btn-secundario" data-em-breve="3">🧲 Leads</button>
-              <button class="btn btn-primario" data-em-breve="3">➕ Nova automação</button>
+              <button class="btn btn-secundario" id="a-btn-recado">📣 Recado</button>
+              <button class="btn btn-primario" id="a-btn-nova">➕ Nova automação</button>
             </div>
           </div>
-          <div class="grade">
-            <div class="card card-numero"><div class="rotulo">⚡ Automações ativas</div><div class="numero">0</div></div>
-            <div class="card card-numero"><div class="rotulo">🧲 Leads</div><div class="numero">0</div></div>
-            <div class="card card-numero"><div class="rotulo">📨 DMs hoje</div><div class="numero">0</div><div class="variacao">limite diário: 150</div></div>
+
+          <div class="aviso erro oculto" id="a-aviso-freio" style="margin-bottom:16px"></div>
+
+          <div class="grade grade-numeros">
+            <div class="card card-numero"><div class="rotulo">⚡ Automações ativas</div><div class="numero" id="a-n-ativas">-</div><div class="variacao" id="a-n-total">de 0</div></div>
+            <div class="card card-numero"><div class="rotulo">🧲 Leads</div><div class="numero" id="a-n-leads">-</div><div class="variacao" id="a-n-janela">janelas abertas: -</div></div>
+            <div class="card card-numero"><div class="rotulo">📨 Envios hoje</div><div class="numero" id="a-n-hoje">-</div><div class="variacao" id="a-n-cap">limite: -</div></div>
+            <div class="card card-numero"><div class="rotulo">📧 E-mails coletados</div><div class="numero" id="a-n-emails">-</div><div class="variacao">nas DMs</div></div>
           </div>
-          <div class="secao">
-            <div class="vazio">
-              <div class="vazio-emoji">🤖</div>
-              <h3>Nenhuma automação ainda.</h3>
-              <p>Que tal criar a primeira? Ex.: quem comentar "QUERO" no seu próximo reel recebe o link na DM. Isso chega na FASE 3.</p>
-              <button class="btn btn-primario" data-em-breve="3">➕ Criar automação</button>
+
+          <nav class="subabas" aria-label="Seções da automação">
+            <button data-sub="lista" class="ativo">🤖 Automações</button>
+            <button data-sub="leads">🧲 Leads</button>
+            <button data-sub="entregas">📬 Entregas</button>
+            <button data-sub="freio">🛑 Freio</button>
+            <button data-sub="midia">🖼️ Mídia</button>
+          </nav>
+
+          <div class="subaba ativa" data-sub="lista">
+            <div class="grade grade-autos" id="a-lista"></div>
+          </div>
+
+          <div class="subaba" data-sub="leads">
+            <div class="tabela-caixa">
+              <div class="tabela-ferramentas">
+                <input class="input" id="a-l-busca" placeholder="🔎 Buscar @ ou palavra">
+                <select class="select select-p" id="a-l-origem">
+                  <option value="">Todas as origens</option>
+                  <option value="comment">💬 Comentário</option>
+                  <option value="dm">✉️ DM</option>
+                </select>
+                <select class="select select-p" id="a-l-filtro">
+                  <option value="">Todos</option>
+                  <option value="janela">🟢 Janela aberta</option>
+                  <option value="email">📧 Com e-mail</option>
+                </select>
+                <button class="btn btn-fantasma btn-p" id="a-l-csv" style="margin-left:auto">⬇️ CSV</button>
+              </div>
+              <div id="a-l-tabela"></div>
             </div>
+          </div>
+
+          <div class="subaba" data-sub="entregas">
+            <div class="tabela-caixa">
+              <div class="tabela-ferramentas">
+                <select class="select select-p" id="a-e-auto"><option value="">Todas as automações</option></select>
+                <input class="input" type="date" id="a-e-dia" style="max-width:180px">
+                <select class="select select-p" id="a-e-status">
+                  <option value="">Todos os status</option>
+                  <option value="ok">✅ Enviados</option>
+                  <option value="erro">❌ Erros</option>
+                  <option value="pulado">⏭️ Pulados</option>
+                </select>
+                <button class="btn btn-fantasma btn-p" id="a-e-atualizar" style="margin-left:auto">🔄 Atualizar</button>
+              </div>
+              <div id="a-e-tabela"></div>
+            </div>
+          </div>
+
+          <div class="subaba" data-sub="freio">
+            <div class="grade grade-numeros" id="a-f-contadores"></div>
+            <div class="grade-2" style="margin-top:16px">
+              <form class="card" id="a-f-form">
+                <h3 class="bloco-titulo">🎚️ Limites</h3>
+                <p class="muted pequeno" style="margin:-8px 0 14px">Conservador é melhor: uma conta foi freada pelo Instagram com cerca de 210 envios num dia, mesmo dentro das regras.</p>
+                <div class="form-grade" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+                  <div class="campo"><label for="a-f-min">Por minuto</label><input class="input" type="number" min="1" max="60" id="a-f-min"></div>
+                  <div class="campo"><label for="a-f-hora">Por hora</label><input class="input" type="number" min="1" max="500" id="a-f-hora"></div>
+                  <div class="campo"><label for="a-f-dia">Por dia</label><input class="input" type="number" min="1" max="1000" id="a-f-dia"></div>
+                </div>
+                <div class="form-acoes"><button class="btn btn-primario" type="submit">💾 Salvar limites</button></div>
+              </form>
+              <div class="card">
+                <h3 class="bloco-titulo">⏯️ Pausar tudo</h3>
+                <p class="muted pequeno" id="a-f-estado" style="margin-bottom:14px">...</p>
+                <div class="linha">
+                  <button class="btn btn-perigo" id="a-f-pausar">⏸️ Pausar tudo</button>
+                  <button class="btn btn-secundario" id="a-f-retomar">▶️ Retomar</button>
+                </div>
+                <p class="muted pequeno" style="margin-top:14px">3 erros de limite da Meta seguidos pausam tudo por 1 hora, sozinho.</p>
+              </div>
+            </div>
+            <div class="secao">
+              <h2 class="secao-titulo">📜 Histórico de pausas</h2>
+              <div class="tabela-caixa"><div id="a-f-pausas"></div></div>
+            </div>
+          </div>
+
+          <div class="subaba" data-sub="midia">
+            <div class="card linha" style="justify-content:space-between;margin-bottom:16px">
+              <div>
+                <strong>📤 Enviar arquivo</strong>
+                <div class="muted pequeno">Imagem até 8MB (JPG, PNG, GIF, WEBP). Áudio M4A, vídeo MP4 e PDF até 25MB. MP3 o Instagram recusa.</div>
+              </div>
+              <label class="btn btn-primario" style="cursor:pointer">📎 Escolher arquivo
+                <input type="file" id="a-m-arquivo" accept="image/jpeg,image/png,image/gif,image/webp,audio/mp4,audio/x-m4a,.m4a,video/mp4,application/pdf" hidden multiple>
+              </label>
+            </div>
+            <div id="a-m-progresso" class="muted pequeno oculto" style="margin-bottom:12px"></div>
+            <div class="grade grade-midia" id="a-m-grade"></div>
           </div>
         </section>
 
@@ -334,6 +422,55 @@
             <div class="grade" id="cards-integracoes">
               <div class="esqueleto"></div><div class="esqueleto"></div><div class="esqueleto"></div><div class="esqueleto"></div>
             </div>
+          </div>
+
+          <div class="secao">
+            <h2 class="secao-titulo">📸 Instagram</h2>
+            <p class="secao-sub">Conta conectada, validade do token e o que colar no painel da Meta.</p>
+            <div class="grade-2">
+              <div class="card" style="display:grid;gap:12px">
+                <div class="linha" style="justify-content:space-between">
+                  <strong>👤 Conta conectada</strong>
+                  <button class="btn btn-fantasma btn-p" id="ig-cfg-renovar">🔄 Renovar token agora</button>
+                </div>
+                <div id="ig-cfg-conta" class="muted pequeno">Verificando...</div>
+                <div id="ig-cfg-token" class="muted pequeno"></div>
+              </div>
+              <div class="card" style="display:grid;gap:14px">
+                <div class="campo">
+                  <label>🔗 URL do webhook (Callback URL)</label>
+                  <div class="linha" style="flex-wrap:nowrap">
+                    <input class="input mono" id="url-ig-webhook" readonly>
+                    <button class="btn btn-secundario btn-p" data-copiar-de="url-ig-webhook">📋</button>
+                  </div>
+                </div>
+                <div class="campo">
+                  <label>🔑 Verify token</label>
+                  <div class="linha" style="flex-wrap:nowrap">
+                    <input class="input mono" id="ig-verify-token" readonly placeholder="(ainda não configurado)">
+                    <button class="btn btn-secundario btn-p" data-copiar-de="ig-verify-token">📋</button>
+                  </div>
+                </div>
+                <span class="ajuda">Campos pra assinar: comments, messages, messaging_postbacks, messaging_seen.</span>
+              </div>
+            </div>
+
+            <div class="alerta-grande" style="margin-top:16px">
+              🚨 O app da Meta precisa estar PUBLICADO (modo Ativo). Em modo de desenvolvimento o botão "Testar" do webhook funciona, mas comentário de verdade NÃO chega.
+            </div>
+
+            <details class="card" style="margin-top:16px">
+              <summary>📋 Passo a passo na Meta (e as 7 ciladas)</summary>
+              <ol class="passos-cfg" style="margin:0;padding:0">
+                <li><strong>App tipo Negócios</strong> em developers.facebook.com, com o produto <strong>Instagram</strong> e a opção "API do Instagram com login do Instagram". Permissões: <code>instagram_business_basic</code>, <code>instagram_business_manage_comments</code>, <code>instagram_business_manage_messages</code>. Sua conta do Instagram tem que ser Profissional (Criador ou Empresa).</li>
+                <li><strong>Testador do Instagram:</strong> adicione a sua conta como testadora e ACEITE o convite dentro do Instagram (Configurações > Site e apps > Convites de testador). Com o convite pendente, gerar token dá "função de desenvolvedor insuficiente".</li>
+                <li><strong>Token de 60 dias:</strong> gere na tela do produto Instagram e salve no Supabase como secret <code>IG_ACCESS_TOKEN</code>. O id da conta vai em <code>IG_ACCOUNT_ID</code>.</li>
+                <li><strong>Webhook:</strong> cole a URL e o verify token daqui de cima e assine os campos <code>comments</code>, <code>messages</code>, <code>messaging_postbacks</code>, <code>messaging_seen</code>. Depois ative a conta no webhook (assinar a conta).</li>
+                <li><strong>APP_SECRET</strong> é a "chave secreta do app do INSTAGRAM" (na tela do produto Instagram), NÃO a do app do Facebook em Configurações > Básico.</li>
+                <li><strong>Publique o app (modo Ativo).</strong> Em desenvolvimento, comentário de verdade não chega.</li>
+                <li><strong>O Explorador da Graph API não serve</strong> pra esse tipo de app: ele é do graph.facebook.com, e aqui é graph.instagram.com.</li>
+              </ol>
+            </details>
           </div>
 
           <div class="secao">
@@ -415,6 +552,7 @@
   <script src="js/config.js"></script>
   <script src="js/core.js"></script>
   <script src="js/abas/disparo.js"></script>
+  <script src="js/abas/automacao.js"></script>
   <script src="js/abas/configuracoes.js"></script>
   <script src="js/admin.js"></script>
 </body>

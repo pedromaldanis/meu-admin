@@ -12,7 +12,7 @@ Painel de admin só meu: disparo de e-mails, automação do Instagram, revisão 
 |---|---|---|
 | 1 | Fundação: login, painel, configurações | ✅ pronta |
 | 2 | 📧 Disparo de e-mails | ✅ pronta |
-| 3 | 🤖 Automação do Instagram | ⏳ |
+| 3 | 🤖 Automação do Instagram | ✅ pronta |
 | 4 | 📊 Revisão do Instagram | ⏳ |
 | 5 | 💡 Criativos e ideias | ⏳ |
 
@@ -88,6 +88,30 @@ E abra `http://localhost:8080/login.html`.
 - **Cota da Resend:** se acabar, o envio para na hora e diz quantos ficaram de fora.
 - **Descadastro:** o rodapé pede pra responder SAIR; marque a pessoa como descadastrada em Contatos. Bounce e reclamação de spam bloqueiam sozinhos (tabela `email_optout`).
 
+## 2.2 FASE 3: automação do Instagram
+
+1. **SQL:** `supabase/sql/03-instagram.sql` (tabelas, freio, bucket `ig-assets`, robôs `ig-scheduler` e `ig-token-refresh`).
+2. **Na Meta** (o passo a passo também está em ⚙️ Configurações > Instagram):
+   1. App tipo **Negócios**, produto **Instagram**, "API do Instagram com login do Instagram". Permissões `instagram_business_basic`, `instagram_business_manage_comments`, `instagram_business_manage_messages`. Conta do Instagram **Profissional**.
+   2. Adicione a sua conta como **testadora do Instagram** e **aceite o convite dentro do Instagram** (Configurações > Site e apps > Convites de testador). Com o convite pendente, gerar token dá "função de desenvolvedor insuficiente".
+   3. Gere o **token de 60 dias** na tela do produto Instagram e salve no secret `IG_ACCESS_TOKEN`. Salve também `IG_ACCOUNT_ID` (o id numérico, de `GET https://graph.instagram.com/v21.0/me?fields=id,username`).
+   4. **Webhook:** URL `https://SEU_REF.supabase.co/functions/v1/instagram-webhook`, verify token = secret `VERIFY_TOKEN` (aparece em ⚙️ Configurações), campos `comments`, `messages`, `messaging_postbacks`, `messaging_seen`. Depois assine a conta: `POST /me/subscribed_apps?subscribed_fields=comments,messages,messaging_postbacks`.
+   5. `APP_SECRET` é a **chave secreta do app do INSTAGRAM** (tela do produto Instagram), **não** a do Facebook em Configurações > Básico. Ela valida o `X-Hub-Signature-256`.
+   6. **PUBLIQUE O APP (modo Ativo).** Em modo de desenvolvimento o botão "Testar" do webhook funciona, mas **comentário de verdade NÃO chega**.
+   7. O **Explorador da Graph API não serve** pra esse app (ele é do graph.facebook.com; aqui é graph.instagram.com).
+3. **Token renovado:** o `ig-token-refresh` renova toda segunda e guarda o token novo no **Vault** (`ig_access_token`), que tem prioridade sobre o secret. Se falhar ou faltar menos de 10 dias, manda e-mail pro "E-mail de teste" das Configurações.
+
+### Regras da Meta (respeitadas pelo robô)
+
+- Mensagem nova só dentro de **24h da última mensagem da pessoa**. Toque em botão (postback) conta; **comentário NÃO conta**.
+- **Resposta privada** a comentário: **1 por comentário**, até 7 dias depois dele. Por isso o convite com botão: o toque abre a janela de 24h e aí o link, os arquivos e os passos com atraso podem ir.
+- Nada de link idêntico em massa pra quem não te segue: varie as frases (use as variantes da resposta pública).
+- **Alta taxa de denúncia é o que derruba conta.** A primeira mensagem sempre diz que é automática.
+
+### Freio
+
+Padrão conservador: **10 por minuto, 60 por hora, 150 por dia** (uma conta foi freada com cerca de 210 envios num dia, mesmo dentro das regras). **3 erros de limite seguidos pausam tudo por 1 hora** e aparecem no painel. Dá pra pausar e retomar na mão na sub-aba 🛑 Freio.
+
 ## 3. Secrets (Edge Functions)
 
 Configurados com `supabase secrets set NOME=valor --project-ref SEU_REF`. **Nunca** vão pro HTML, pro repositório ou pra tela. A aba ⚙️ Configurações só mostra se cada um existe.
@@ -122,7 +146,7 @@ Configurados com `supabase secrets set NOME=valor --project-ref SEU_REF`. **Nunc
 | `resend-webhook` | Resend | assinatura Svix | **`--no-verify-jwt`** | 2 |
 | `instagram-webhook` | Meta | `X-Hub-Signature-256` | **`--no-verify-jwt`** | 3 |
 | `ig-scheduler` | cron (1 min) | `x-sched-key` | **`--no-verify-jwt`** | 3 |
-| `ig-token-refresh` | cron (semanal) | `x-sched-key` | **`--no-verify-jwt`** | 3 |
+| `ig-token-refresh` | cron (semanal) + botão no painel | `x-sched-key` ou JWT admin | **`--no-verify-jwt`** | 3 |
 | `ig-media` | painel | JWT + role admin | normal | 3 |
 | `ig-test-send` | painel | JWT + role admin | normal | 3 |
 | `ig-broadcast` | painel | JWT + role admin | normal | 3 |
@@ -142,8 +166,9 @@ Deploy de cron/webhook: `supabase functions deploy NOME --project-ref SEU_REF --
 | Cron | Quando | Chama |
 |---|---|---|
 | `emails-agendados` ✅ | a cada 1 minuto | `processar-emails-agendados` |
-| `ig-scheduler` | a cada 1 minuto | `ig-scheduler` |
-| `ig-token-refresh` | toda segunda, 9h de SP | `ig-token-refresh` |
+| `ig-scheduler` ✅ | a cada 1 minuto | `ig-scheduler` |
+| `ig-token-refresh` ✅ | toda segunda, 9h de SP | `ig-token-refresh` |
+| `ig-limpar-ecos` ✅ | todo dia, 4h17 UTC | apaga `ig_bot_sends` com mais de 7 dias (SQL puro) |
 | `ig-insights-aquecer` | todo dia, 4h de SP | `ig-insights` |
 | `ig-review-diaria` | todo dia, 11h de SP | `ig-review` |
 
@@ -172,5 +197,12 @@ O SQL de cada cron vem na fase correspondente. Ver os crons: `select * from cron
 | "RESEND_API_KEY não configurada" | falta o secret da Resend |
 | Agendado virou erro "Nenhum destinatário" | o alvo estava vazio (tag sem ninguém, lista sem e-mail válido) |
 | Taxa de abertura sempre "-" | webhook da Resend não cadastrado, ou tracking desligado no domínio |
+| **Webhook do Instagram mudo** (comentário não gera nada) | **app da Meta em modo de desenvolvimento**; ou conta não assinada (`subscribed_apps`); ou automação pausada |
+| Handshake do webhook falha | verify token diferente do secret `VERIFY_TOKEN` |
+| Webhook dá 401 | `APP_SECRET` errado (tem que ser o do app do INSTAGRAM) |
+| **DM não sai** | janela de 24h fechada, ou **freio pausado** (veja 🛑 Freio e 📬 Entregas) |
+| "função de desenvolvedor insuficiente" ao gerar token | convite de testador não aceito dentro do Instagram |
+| Passo com atraso cancelado | a pessoa não falou nas últimas 24h (regra da Meta) |
+| Testar diz "ainda não conheço @conta" | mande uma DM da conta de teste pro seu perfil antes |
 
 (A tabela cresce a cada fase.)

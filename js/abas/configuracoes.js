@@ -48,6 +48,11 @@
         const r = await U.chamarFunction("status-integracoes");
         caixa.innerHTML = r.integracoes.map(cardIntegracao).join("");
         verificado.textContent = `Verificado em ${U.dataHora(r.verificado_em)}.`;
+        document.getElementById("ig-verify-token").value = r.verifyToken || "";
+        const ig = r.integracoes.find((i) => i.id === "instagram");
+        document.getElementById("ig-cfg-token").textContent = ig ? "🔑 " + ig.resumo : "";
+        if (ig && ig.itens.find((i) => i.nome === "IG_ACCESS_TOKEN")?.ok) carregarConta();
+        else document.getElementById("ig-cfg-conta").textContent = "Nenhum token ainda. Siga o passo a passo abaixo.";
       } catch (e) {
         verificado.textContent = "";
         caixa.innerHTML = `
@@ -59,6 +64,38 @@
               <span class="muted pequeno">Publique a function com: <code>supabase functions deploy status-integracoes --project-ref SEU_REF</code></span>
             </span>
           </div>`;
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------------
+  // Instagram
+  // ---------------------------------------------------------------------
+  async function carregarConta() {
+    const el = document.getElementById("ig-cfg-conta");
+    try {
+      const { conta: c } = await U.chamarFunction("ig-media", { acao: "conta" });
+      el.innerHTML = `
+        <div class="linha">
+          ${c.profile_picture_url ? `<img src="${U.esc(c.profile_picture_url)}" alt="" referrerpolicy="no-referrer" style="width:44px;height:44px;border-radius:50%">` : ""}
+          <div><strong style="color:var(--texto)">@${U.esc(c.username)}</strong>
+            <div>${U.esc(c.account_type || "")} · ${U.numero(c.followers_count)} seguidores · ${U.numero(c.media_count)} posts</div>
+            <div class="mono">id ${U.esc(c.user_id || c.id)}</div></div>
+        </div>`;
+    } catch (e) {
+      el.innerHTML = `<span style="color:var(--erro)">⚠️ ${U.esc(e.message)}</span>`;
+    }
+  }
+
+  async function renovarToken(btn) {
+    await U.comCarregando(btn, async () => {
+      try {
+        const r = await U.chamarFunction("ig-token-refresh", {});
+        if (!r.ok) return U.toast("Não renovou: " + r.erro, "erro", 8000);
+        U.toast(`Token renovado ✓ Vale por mais ${r.dias} dias.`, "ok", 5000);
+        carregarStatus(document.getElementById("btn-verificar"));
+      } catch (e) {
+        U.toast(e.message, "erro", 8000);
       }
     });
   }
@@ -114,6 +151,8 @@
       document.getElementById("conta-email").textContent = PAINEL.usuario.email;
       const base = window.APP_CONFIG.SUPABASE_URL.replace(/\/$/, "") + "/functions/v1/";
       document.getElementById("url-resend-webhook").value = base + "resend-webhook";
+      document.getElementById("url-ig-webhook").value = base + "instagram-webhook";
+      document.getElementById("ig-cfg-renovar").addEventListener("click", (e) => renovarToken(e.currentTarget));
       document.querySelectorAll("[data-copiar-de]").forEach((b) => b.addEventListener("click", () =>
         U.copiar(document.getElementById(b.dataset.copiarDe).value)));
       carregarConfig();

@@ -95,5 +95,8 @@ servir(async (req) => {
     { id: "robos", nome: "Robôs (cron)", emoji: "⏱️", fase: 2, status: robosStatus, resumo: RESUMO[robosStatus], itens: robosItens },
   ];
 
-  return json({ ok: true, verificado_em: new Date().toISOString(), venceEmDias, integracoes });
+  // O verify token não é chave de API: é o texto que você cola no painel da Meta pro handshake do webhook.
+  const verifyToken = Deno.env.get("VERIFY_TOKEN")?.trim() || null;
+
+  return json({ ok: true, verificado_em: new Date().toISOString(), venceEmDias, verifyToken, integracoes });
 });

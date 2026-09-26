@@ -18,3 +18,22 @@ verify_jwt = false   # cron: valida x-sched-key
 
 [functions.resend-webhook]
 verify_jwt = false   # webhook: valida assinatura Svix
+
+# ---------- FASE 3 ----------
+[functions.instagram-webhook]
+verify_jwt = false   # webhook da Meta: valida X-Hub-Signature-256
+
+[functions.ig-scheduler]
+verify_jwt = false   # cron: valida x-sched-key
+
+[functions.ig-token-refresh]
+verify_jwt = false   # cron (x-sched-key) ou painel (confere o JWT de admin dentro da function)
+
+[functions.ig-media]
+verify_jwt = true
+
+[functions.ig-test-send]
+verify_jwt = true
+
+[functions.ig-broadcast]
+verify_jwt = true

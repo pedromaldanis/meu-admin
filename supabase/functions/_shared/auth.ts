@@ -93,3 +93,13 @@ export function servir(fn: (req: Request) => Promise<Response>): void {
     }
   });
 }
+
+/** Aceita as duas portas: o cron (x-sched-key) ou o painel (JWT de admin). */
+export async function exigirAdminOuSched(req: Request): Promise<{ db: SupabaseClient; origem: "cron" | "painel" }> {
+  if (req.headers.get("x-sched-key")) {
+    exigirSchedKey(req);
+    return { db: adminClient(), origem: "cron" };
+  }
+  const { db } = await exigirAdmin(req);
+  return { db, origem: "painel" };
+}
