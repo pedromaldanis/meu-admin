@@ -185,8 +185,117 @@
     return String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   }
 
+  // ---------------------------------------------------------------------
+  // Tabela com ordenação por clique no cabeçalho (vira cards no celular)
+  // U.tabela(el, { colunas: [{ campo, titulo, render?(linha), ordenavel? }], linhas, vazio })
+  // ---------------------------------------------------------------------
+  function tabela(el, { colunas, linhas, vazio = "Nada por aqui ainda.", limite = 500 }) {
+    const estado = el._ordem || { campo: null, dir: "asc" };
+    el._ordem = estado;
+    const ordenada = estado.campo ? ordenarPor(linhas, estado.campo, estado.dir) : linhas;
+    const lista = ordenada.slice(0, limite);
+    const indice = new Map(linhas.map((l, i) => [l, i]));
+
+    if (!lista.length) {
+      el.innerHTML = `<div class="vazio" style="border:0;background:none;padding:40px 16px"><div class="vazio-emoji">🫙</div><p style="margin-bottom:0">${esc(vazio)}</p></div>`;
+      return;
+    }
+    const cab = colunas.map((c) => {
+      const ord = estado.campo === c.campo ? estado.dir : "";
+      const clicavel = c.ordenavel !== false && c.campo;
+      return `<th ${clicavel ? `data-campo="${esc(c.campo)}"` : 'style="cursor:default"'} ${ord ? `data-ordem="${ord}"` : ""}>${esc(c.titulo)}</th>`;
+    }).join("");
+    const corpo = lista.map((l, i) => `<tr data-i="${indice.get(l)}">${colunas.map((c) =>
+      `<td data-label="${esc(c.titulo)}">${c.render ? c.render(l, i) : esc(l[c.campo] ?? "-")}</td>`).join("")}</tr>`).join("");
+    const nota = ordenada.length > lista.length
+      ? `<div class="muted pequeno" style="padding:12px 16px">Mostrando ${lista.length} de ${numero(ordenada.length)}. Use a busca pra achar o resto.</div>` : "";
+    el.innerHTML = `<div style="overflow-x:auto"><table class="tabela"><thead><tr>${cab}</tr></thead><tbody>${corpo}</tbody></table></div>${nota}`;
+
+    el.querySelectorAll("th[data-campo]").forEach((th) => th.addEventListener("click", () => {
+      const campo = th.dataset.campo;
+      estado.dir = estado.campo === campo && estado.dir === "asc" ? "desc" : "asc";
+      estado.campo = campo;
+      tabela(el, { colunas, linhas, vazio, limite });
+    }));
+  }
+
+  // ---------------------------------------------------------------------
+  // CSV (separador ; e BOM pro Excel em português abrir certinho)
+  // ---------------------------------------------------------------------
+  function baixarCSV(nomeArquivo, linhas, colunas) {
+    const cel = (v) => {
+      const s = Array.isArray(v) ? v.join(", ") : String(v ?? "");
+      return /[";\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const csv = [colunas.map((c) => cel(c.titulo)).join(";")]
+      .concat(linhas.map((l) => colunas.map((c) => cel(c.valor ? c.valor(l) : l[c.campo])).join(";")))
+      .join("\r\n");
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = nomeArquivo;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+
+  // ---------------------------------------------------------------------
+  // Horário de São Paulo <-> ISO (pra input datetime-local)
+  // ---------------------------------------------------------------------
+  const fmtPartes = new Intl.DateTimeFormat("en-US", {
+    timeZone: FUSO, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+  });
+  function partesSP(ts) {
+    const p = Object.fromEntries(fmtPartes.formatToParts(new Date(ts)).map((x) => [x.type, x.value]));
+    return { Y: +p.year, M: +p.month, D: +p.day, h: +p.hour, m: +p.minute, s: +p.second };
+  }
+  function offsetSP(ts) {
+    const p = partesSP(ts);
+    return (Date.UTC(p.Y, p.M - 1, p.D, p.h, p.m, p.s) - Math.floor(ts / 1000) * 1000) / 60000;
+  }
+  /** "2026-09-26T14:30" (horário de SP) -> ISO UTC */
+  function spParaISO(valor) {
+    const [d, t] = String(valor).split("T");
+    if (!d || !t) return null;
+    const [Y, M, D] = d.split("-").map(Number);
+    const [h, m] = t.split(":").map(Number);
+    const comoUTC = Date.UTC(Y, M - 1, D, h, m);
+    let ts = comoUTC - offsetSP(comoUTC) * 60000;
+    ts = comoUTC - offsetSP(ts) * 60000;
+    return new Date(ts).toISOString();
+  }
+  /** Agora (+ minutos) em SP, no formato do input datetime-local */
+  function spInput(maisMinutos = 0) {
+    const p = partesSP(Date.now() + maisMinutos * 60000);
+    const z = (n) => String(n).padStart(2, "0");
+    return `${p.Y}-${z(p.M)}-${z(p.D)}T${z(p.h)}:${z(p.m)}`;
+  }
+
+  async function copiar(texto) {
+    try {
+      await navigator.clipboard.writeText(texto);
+      toast("Copiado ✓");
+    } catch {
+      toast("Não consegui copiar. Selecione e copie na mão.", "aviso");
+    }
+  }
+
+  /** Busca tudo de uma consulta, de 1000 em 1000 (limite padrão da API). */
+  async function buscarTudo(montarConsulta, limite = 50000) {
+    const tudo = [];
+    for (let de = 0; de < limite; de += 1000) {
+      const { data, error } = await montarConsulta().range(de, de + 999);
+      if (error) throw error;
+      tudo.push(...(data || []));
+      if (!data || data.length < 1000) break;
+    }
+    return tudo;
+  }
+
   window.U = {
     FUSO, configFaltando, esc, dataHora, data, hora, numero, iniciais, guardar,
     toast, modal, confirmar, comCarregando, chamarFunction, ordenarPor, semAcento,
+    tabela, baixarCSV, spParaISO, spInput, copiar, buscarTudo,
   };
 })();

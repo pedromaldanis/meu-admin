@@ -5,5 +5,16 @@
 
 project_id = "meu-admin"
 
+# ---------- FASE 1 ----------
 [functions.status-integracoes]
 verify_jwt = true
+
+# ---------- FASE 2 ----------
+[functions.send-bulk-email]
+verify_jwt = true
+
+[functions.processar-emails-agendados]
+verify_jwt = false   # cron: valida x-sched-key
+
+[functions.resend-webhook]
+verify_jwt = false   # webhook: valida assinatura Svix

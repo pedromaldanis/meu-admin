@@ -63,22 +63,176 @@
               <p>Escreva, teste e envie pra sua base. Agende pra depois e acompanhe quem abriu e clicou.</p>
             </div>
             <div class="cabecalho-acoes">
-              <button class="btn btn-secundario" data-em-breve="2">👥 Contatos</button>
-              <button class="btn btn-primario" data-em-breve="2">✉️ Novo disparo</button>
+              <button class="btn btn-secundario" data-ir-sub="contatos">👥 Contatos</button>
+              <button class="btn btn-primario" data-ir-sub="novo">✉️ Novo disparo</button>
             </div>
           </div>
-          <div class="grade">
-            <div class="card card-numero"><div class="rotulo">👥 Contatos</div><div class="numero">0</div><div class="variacao">na base</div></div>
-            <div class="card card-numero"><div class="rotulo">📤 Enviados em 30 dias</div><div class="numero">0</div><div class="variacao">e-mails</div></div>
-            <div class="card card-numero"><div class="rotulo">👀 Taxa de abertura</div><div class="numero">-</div><div class="variacao">liga com o webhook da Resend</div></div>
-            <div class="card card-numero"><div class="rotulo">⏰ Agendados</div><div class="numero">0</div><div class="variacao">na fila</div></div>
+
+          <div class="grade grade-numeros">
+            <div class="card card-numero"><div class="rotulo">👥 Contatos</div><div class="numero" id="d-n-contatos">-</div><div class="variacao">ativos na base</div></div>
+            <div class="card card-numero"><div class="rotulo">📤 Enviados em 30 dias</div><div class="numero" id="d-n-enviados">-</div><div class="variacao" id="d-n-falhas">e-mails</div></div>
+            <div class="card card-numero"><div class="rotulo">👀 Taxa de abertura</div><div class="numero" id="d-n-abertura">-</div><div class="variacao" id="d-n-abertura-sub">liga com o webhook da Resend</div></div>
+            <div class="card card-numero"><div class="rotulo">⏰ Agendados</div><div class="numero" id="d-n-agendados">-</div><div class="variacao">na fila</div></div>
           </div>
-          <div class="secao">
-            <div class="vazio">
-              <div class="vazio-emoji">📭</div>
-              <h3>Nada por aqui ainda.</h3>
-              <p>Que tal importar seus contatos e mandar o primeiro e-mail de teste pra você mesmo? Isso chega na FASE 2.</p>
-              <button class="btn btn-primario" data-em-breve="2">✉️ Criar meu primeiro disparo</button>
+
+          <nav class="subabas" aria-label="Seções do disparo">
+            <button data-sub="novo" class="ativo">✉️ Novo disparo</button>
+            <button data-sub="agendados">⏰ Agendados</button>
+            <button data-sub="historico">📜 Histórico</button>
+            <button data-sub="contatos">👥 Contatos</button>
+          </nav>
+
+          <!-- ---------------- NOVO DISPARO ---------------- -->
+          <div class="subaba ativa" data-sub="novo">
+            <div class="disparo-grade">
+              <div class="disparo-form">
+
+                <div class="card bloco">
+                  <h3 class="bloco-titulo"><span class="bloco-num">1</span> Pra quem</h3>
+                  <div class="campo">
+                    <label for="d-alvo">Destinatários</label>
+                    <select class="select" id="d-alvo">
+                      <option value="todos">👥 Todos os contatos</option>
+                      <optgroup label="🏷️ Por tag" id="d-alvo-tags"></optgroup>
+                      <option value="lista">📋 Lista avulsa (colar e-mails)</option>
+                      <option value="teste">🧪 Teste, só pra mim</option>
+                    </select>
+                  </div>
+                  <div class="campo oculto" id="d-lista-caixa" style="margin-top:12px">
+                    <label for="d-lista">E-mails, um por linha</label>
+                    <textarea class="textarea" id="d-lista" placeholder="maria@email.com&#10;João Silva;joao@email.com"></textarea>
+                    <span class="ajuda">Pode ser só o e-mail ou "nome;email". Quem está descadastrado é pulado.</span>
+                  </div>
+                  <div class="contagem" id="d-contagem">Contando...</div>
+                </div>
+
+                <div class="card bloco">
+                  <h3 class="bloco-titulo"><span class="bloco-num">2</span> A mensagem</h3>
+                  <div class="linha" style="justify-content:space-between;margin-bottom:14px">
+                    <div class="segmentado" role="tablist">
+                      <button data-modo="texto" class="ativo">✍️ Texto simples</button>
+                      <button data-modo="html">🧩 HTML colado</button>
+                    </div>
+                    <div class="linha">
+                      <select class="select select-p" id="d-modelo"><option value="">📂 Carregar modelo...</option></select>
+                      <button class="btn btn-fantasma btn-p" id="d-salvar-modelo">💾 Salvar modelo</button>
+                    </div>
+                  </div>
+                  <div class="campo">
+                    <label for="d-assunto">Assunto</label>
+                    <input class="input" id="d-assunto" maxlength="200" placeholder="{{nome}}, tenho uma novidade pra você">
+                  </div>
+                  <div id="d-modo-texto" style="display:grid;gap:14px;margin-top:14px">
+                    <div class="campo">
+                      <label for="d-corpo">Texto</label>
+                      <textarea class="textarea" id="d-corpo" style="min-height:200px" placeholder="Oi, {{nome}}!&#10;&#10;Escreva aqui. Deixe uma linha em branco pra começar outro parágrafo."></textarea>
+                    </div>
+                    <div class="form-grade">
+                      <div class="campo">
+                        <label for="d-botao-texto">Botão (opcional)</label>
+                        <input class="input" id="d-botao-texto" maxlength="60" placeholder="Quero saber mais">
+                      </div>
+                      <div class="campo">
+                        <label for="d-botao-url">Link do botão</label>
+                        <input class="input" id="d-botao-url" type="url" placeholder="https://...">
+                      </div>
+                    </div>
+                  </div>
+                  <div id="d-modo-html" class="campo oculto" style="margin-top:14px">
+                    <label for="d-html">HTML do e-mail</label>
+                    <textarea class="textarea mono" id="d-html" style="min-height:260px" placeholder="<html>...</html>"></textarea>
+                  </div>
+                  <div class="chips" style="margin-top:12px">
+                    <span class="muted pequeno">Inserir:</span>
+                    <button class="chip" data-ph="{{nome}}" title="Primeiro nome">{{nome}}</button>
+                    <button class="chip" data-ph="{{nome_completo}}">{{nome_completo}}</button>
+                    <button class="chip" data-ph="{{email}}">{{email}}</button>
+                  </div>
+                </div>
+
+                <div class="card bloco">
+                  <h3 class="bloco-titulo"><span class="bloco-num">3</span> Enviar</h3>
+                  <div class="linha">
+                    <button class="btn btn-secundario" id="d-btn-teste">🧪 Mandar teste pra mim</button>
+                    <button class="btn btn-primario" id="d-btn-enviar">🚀 Enviar agora</button>
+                  </div>
+                  <div class="agendar">
+                    <div class="campo" style="flex:1;min-width:200px">
+                      <label for="d-quando">Ou agendar pra (horário de São Paulo)</label>
+                      <input class="input" id="d-quando" type="datetime-local">
+                    </div>
+                    <button class="btn btn-secundario" id="d-btn-agendar">⏰ Agendar</button>
+                  </div>
+                  <div id="d-progresso" class="oculto">
+                    <div class="barra"><div class="barra-cheia" id="d-barra"></div></div>
+                    <div class="muted pequeno" id="d-progresso-texto"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="disparo-previa">
+                <div class="previa-cab">
+                  <span>👀 Prévia</span>
+                  <span class="muted pequeno" id="d-previa-assunto"></span>
+                </div>
+                <iframe id="d-previa" title="Prévia do e-mail" sandbox=""></iframe>
+                <div class="muted pequeno" style="padding:8px 4px 0">Na prévia, {{nome}} aparece como "Maria".</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------------- AGENDADOS ---------------- -->
+          <div class="subaba" data-sub="agendados">
+            <div class="tabela-caixa">
+              <div class="tabela-ferramentas">
+                <span class="muted pequeno" style="flex:1;align-self:center">Atualiza sozinho a cada 20 segundos.</span>
+                <button class="btn btn-fantasma btn-p" id="d-ag-atualizar">🔄 Atualizar</button>
+              </div>
+              <div id="d-ag-tabela"></div>
+            </div>
+          </div>
+
+          <!-- ---------------- HISTÓRICO ---------------- -->
+          <div class="subaba" data-sub="historico">
+            <div class="grade grade-numeros" id="d-h-stats"></div>
+            <div class="aviso info oculto" id="d-h-webhook" style="margin-top:16px">
+              <span>💡</span>
+              <span>Entregues, aberturas e cliques aparecem quando o webhook da Resend estiver ligado (veja ⚙️ Configurações).</span>
+            </div>
+            <div class="tabela-caixa" style="margin-top:16px">
+              <div class="tabela-ferramentas">
+                <input class="input" id="d-h-busca" placeholder="🔎 Buscar e-mail">
+                <select class="select select-p" id="d-h-assunto"><option value="">Todos os assuntos</option></select>
+                <select class="select select-p" id="d-h-status">
+                  <option value="">Todos os status</option>
+                  <option value="ok">✅ Enviados</option>
+                  <option value="erro">❌ Com erro</option>
+                </select>
+                <button class="btn btn-fantasma btn-p" id="d-h-csv">⬇️ CSV</button>
+              </div>
+              <div id="d-h-tabela"></div>
+            </div>
+          </div>
+
+          <!-- ---------------- CONTATOS ---------------- -->
+          <div class="subaba" data-sub="contatos">
+            <div class="tabela-caixa">
+              <div class="tabela-ferramentas">
+                <input class="input" id="d-c-busca" placeholder="🔎 Buscar nome ou e-mail">
+                <select class="select select-p" id="d-c-tag"><option value="">Todas as tags</option></select>
+                <select class="select select-p" id="d-c-status">
+                  <option value="">Todos</option>
+                  <option value="ativo">✅ Ativos</option>
+                  <option value="fora">🚫 Descadastrados e bloqueados</option>
+                </select>
+                <div class="linha" style="margin-left:auto">
+                  <button class="btn btn-fantasma btn-p" id="d-c-quem">🔎 Quem está na base?</button>
+                  <button class="btn btn-fantasma btn-p" id="d-c-csv">⬇️ CSV</button>
+                  <button class="btn btn-secundario btn-p" id="d-c-novo">➕ Contato</button>
+                  <button class="btn btn-primario btn-p" id="d-c-importar">📥 Importar</button>
+                </div>
+              </div>
+              <div id="d-c-tabela"></div>
             </div>
           </div>
         </section>
@@ -183,6 +337,21 @@
           </div>
 
           <div class="secao">
+            <h2 class="secao-titulo">🔗 Endereços pra copiar</h2>
+            <p class="secao-sub">Cole esses endereços nos painéis das ferramentas.</p>
+            <div class="card" style="display:grid;gap:16px">
+              <div class="campo">
+                <label>📧 Webhook da Resend (Resend > Webhooks > Add Webhook)</label>
+                <div class="linha" style="flex-wrap:nowrap">
+                  <input class="input mono" id="url-resend-webhook" readonly>
+                  <button class="btn btn-secundario btn-p" data-copiar-de="url-resend-webhook">📋 Copiar</button>
+                </div>
+                <span class="ajuda">Marque os eventos: email.delivered, email.opened, email.clicked, email.bounced, email.complained.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="secao">
             <h2 class="secao-titulo">🧾 Meus dados</h2>
             <p class="secao-sub">Usados nos e-mails, nos testes e nas automações.</p>
             <form class="card" id="form-config">
@@ -245,6 +414,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/core.js"></script>
+  <script src="js/abas/disparo.js"></script>
   <script src="js/abas/configuracoes.js"></script>
   <script src="js/admin.js"></script>
 </body>

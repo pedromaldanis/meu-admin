@@ -112,6 +112,10 @@
       document.getElementById("btn-verificar").addEventListener("click", (e) => carregarStatus(e.currentTarget));
       document.getElementById("form-config").addEventListener("submit", salvarConfig);
       document.getElementById("conta-email").textContent = PAINEL.usuario.email;
+      const base = window.APP_CONFIG.SUPABASE_URL.replace(/\/$/, "") + "/functions/v1/";
+      document.getElementById("url-resend-webhook").value = base + "resend-webhook";
+      document.querySelectorAll("[data-copiar-de]").forEach((b) => b.addEventListener("click", () =>
+        U.copiar(document.getElementById(b.dataset.copiarDe).value)));
       carregarConfig();
       carregarStatus(document.getElementById("btn-verificar"));
     },

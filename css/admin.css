@@ -365,6 +365,79 @@ body.carregando::after {
 .linha { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .oculto { display: none !important; }
 
+
+/* ---------------------------------------------------------------------
+   Sub-abas, segmentado, chips, barra de progresso
+   --------------------------------------------------------------------- */
+.grade-numeros { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.subabas {
+  display: flex; gap: 4px; margin: 28px 0 20px; padding: 4px;
+  background: var(--fundo-2); border: 1px solid var(--borda); border-radius: 14px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.subabas::-webkit-scrollbar { display: none; }
+.subabas button {
+  flex: 1; white-space: nowrap; background: none; border: 0; border-radius: 10px;
+  padding: 9px 14px; color: var(--texto-2); font-weight: 500; font-size: 14px; cursor: pointer;
+}
+.subabas button:hover { color: var(--texto); }
+.subabas button.ativo { background: var(--card-2); color: var(--cor); }
+.subaba { display: none; }
+.subaba.ativa { display: block; animation: surgir 0.2s ease-out; }
+
+.segmentado { display: inline-flex; padding: 3px; background: var(--fundo-2); border: 1px solid var(--borda); border-radius: 999px; }
+.segmentado button {
+  background: none; border: 0; border-radius: 999px; padding: 6px 14px;
+  color: var(--texto-2); font-size: 13px; font-weight: 500; cursor: pointer;
+}
+.segmentado button.ativo { background: var(--cor); color: var(--cor-texto-sobre); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.chip {
+  background: var(--cor-suave); color: var(--cor); border: 1px solid transparent;
+  border-radius: 999px; padding: 3px 10px; font-size: 12px; font-family: ui-monospace, Menlo, monospace; cursor: pointer;
+}
+.chip:hover { border-color: var(--cor); }
+.tag {
+  display: inline-block; background: rgba(111, 168, 255, 0.14); color: var(--info);
+  border-radius: 999px; padding: 1px 8px; font-size: 12px; margin: 1px 2px 1px 0;
+}
+
+.select-p { width: auto; padding: 7px 12px; font-size: 13px; }
+.mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; }
+
+.barra { height: 10px; background: var(--fundo-2); border-radius: 999px; overflow: hidden; margin: 16px 0 8px; }
+.barra-cheia { height: 100%; width: 0; background: linear-gradient(90deg, var(--cor), var(--info)); transition: width 0.3s; }
+
+/* ---------------------------------------------------------------------
+   Disparo
+   --------------------------------------------------------------------- */
+.disparo-grade { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 20px; align-items: start; }
+.disparo-form { display: grid; gap: 16px; }
+.bloco-titulo { font-size: 16px; display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.bloco-num {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--cor); color: var(--cor-texto-sobre);
+  display: grid; place-items: center; font-size: 13px; font-weight: 700;
+}
+.contagem {
+  margin-top: 14px; padding: 12px 14px; border-radius: var(--raio-p);
+  background: var(--cor-suave); color: var(--cor); font-weight: 500; font-size: 14px;
+}
+.contagem.zero { background: rgba(255, 107, 129, 0.1); color: var(--erro); }
+.agendar { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--borda); }
+.disparo-previa {
+  position: sticky; top: 80px;
+  background: var(--card); border: 1px solid var(--borda); border-radius: var(--raio); padding: 14px;
+}
+.previa-cab { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 0 4px 10px; font-weight: 600; font-size: 14px; }
+.previa-cab .muted { font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#d-previa { width: 100%; height: 640px; border: 0; border-radius: 10px; background: #f4f6fb; }
+
+.lista-resultado { max-height: 220px; overflow-y: auto; background: var(--fundo-2); border-radius: var(--raio-p); padding: 10px 12px; font-size: 13px; font-family: ui-monospace, Menlo, monospace; white-space: pre-wrap; }
+input[type="datetime-local"] { color-scheme: dark; }
+.check { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
+.check input { width: 18px; height: 18px; accent-color: var(--cor); }
+
 /* ---------------------------------------------------------------------
    Celular
    --------------------------------------------------------------------- */
@@ -395,6 +468,18 @@ body.carregando::after {
   .tabela td { border: 0; padding: 4px 0; display: flex; justify-content: space-between; gap: 12px; text-align: right; }
   .tabela td::before { content: attr(data-label); color: var(--texto-3); font-size: 12px; text-align: left; flex-shrink: 0; }
   .tabela-ferramentas .input { max-width: none; }
+
+  .grade-numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .grade-numeros .card { padding: 14px; }
+  .grade-numeros .numero { font-size: 24px; }
+  .disparo-grade { grid-template-columns: 1fr; }
+  .disparo-previa { position: static; }
+  #d-previa { height: 520px; }
+  .subabas { margin-top: 20px; }
+  .subabas button { flex: 0 0 auto; }
+  .tabela-ferramentas .select-p { flex: 1; }
+  .tabela-ferramentas .linha { margin-left: 0 !important; width: 100%; }
+  .tabela-ferramentas .linha .btn { flex: 1; }
 
   .toasts { left: 16px; right: 16px; align-items: stretch; }
   .toast { max-width: none; }

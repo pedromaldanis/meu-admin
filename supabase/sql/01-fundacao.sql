@@ -104,6 +104,8 @@ on conflict (chave) do nothing;
 revoke all on public.usuarios, public.configuracoes from anon;
 revoke truncate, references, trigger on public.usuarios, public.configuracoes from authenticated;
 grant select, insert, update, delete on public.usuarios, public.configuracoes to authenticated;
+-- As Edge Functions usam service_role: também precisa de acesso explícito.
+grant select, insert, update, delete on public.usuarios, public.configuracoes to service_role;
 
 -- ---------------------------------------------------------------------
 -- PRIMEIRO ADMIN

@@ -11,7 +11,7 @@ Painel de admin só meu: disparo de e-mails, automação do Instagram, revisão 
 | Fase | O quê | Status |
 |---|---|---|
 | 1 | Fundação: login, painel, configurações | ✅ pronta |
-| 2 | 📧 Disparo de e-mails | ⏳ |
+| 2 | 📧 Disparo de e-mails | ✅ pronta |
 | 3 | 🤖 Automação do Instagram | ⏳ |
 | 4 | 📊 Revisão do Instagram | ⏳ |
 | 5 | 💡 Criativos e ideias | ⏳ |
@@ -64,6 +64,29 @@ python3 -m http.server 8080
 E abra `http://localhost:8080/login.html`.
 
 ---
+
+## 2.1 FASE 2: disparo de e-mails
+
+1. **SQL:** `supabase/sql/02-disparo.sql` (liga `pg_cron` e `pg_net`, cria as tabelas e o robô).
+2. **Vault** (uma vez só, guarda a URL e a senha do robô fora do código):
+   ```sql
+   select vault.create_secret('https://SEU_REF.supabase.co', 'project_url');
+   select vault.create_secret('O_MESMO_VALOR_DO_SCHED_SECRET', 'sched_secret');
+   ```
+   O `sched_secret` do Vault tem que ser **igual** ao secret `SCHED_SECRET` das functions. Se trocar um, troque o outro.
+3. **Resend:** domínio verificado (SPF e DKIM) e o secret `RESEND_API_KEY`.
+4. **Webhook da Resend:** Resend > Webhooks > Add Webhook, com a URL
+   `https://SEU_REF.supabase.co/functions/v1/resend-webhook` e os eventos `email.delivered`, `email.opened`, `email.clicked`, `email.bounced`, `email.complained`. Copie o "Signing secret" (`whsec_...`) pro secret `RESEND_WEBHOOK_SECRET`.
+   Aberturas e cliques só são contados se "Open tracking" e "Click tracking" estiverem ligados no domínio, na Resend.
+
+### Como o disparo funciona
+
+- **Enviar agora:** o painel busca os destinatários e chama `send-bulk-email` em lotes de 50 (máx. 250 por chamada). Não feche a aba durante o envio.
+- **Agendar:** grava em `emails_agendados`. O robô roda a cada minuto, pega 1 agendamento vencido, envia em lotes de 100 e pula quem já recebeu o mesmo assunto com sucesso (dá pra "continuar" um disparo que morreu no meio só reagendando).
+- **Trava:** agendamento com 0 destinatários vira `erro`, nunca `enviado`.
+- **Lista avulsa:** os e-mails colados viajam junto com o agendamento (`lista_emails`).
+- **Cota da Resend:** se acabar, o envio para na hora e diz quantos ficaram de fora.
+- **Descadastro:** o rodapé pede pra responder SAIR; marque a pessoa como descadastrada em Contatos. Bounce e reclamação de spam bloqueiam sozinhos (tabela `email_optout`).
 
 ## 3. Secrets (Edge Functions)
 
@@ -118,7 +141,7 @@ Deploy de cron/webhook: `supabase functions deploy NOME --project-ref SEU_REF --
 
 | Cron | Quando | Chama |
 |---|---|---|
-| `emails-agendados` | a cada 1 minuto | `processar-emails-agendados` |
+| `emails-agendados` ✅ | a cada 1 minuto | `processar-emails-agendados` |
 | `ig-scheduler` | a cada 1 minuto | `ig-scheduler` |
 | `ig-token-refresh` | toda segunda, 9h de SP | `ig-token-refresh` |
 | `ig-insights-aquecer` | todo dia, 4h de SP | `ig-insights` |
@@ -143,6 +166,11 @@ O SQL de cada cron vem na fase correspondente. Ver os crons: `select * from cron
 | Erro 403 / "permission denied for table" | faltou o `grant ... to authenticated` da tabela (projetos novos do Supabase não liberam sozinhos) |
 | Tela de login avisa "Falta preencher js/config.js" | URL e chave anon ainda não coladas |
 | Card de integrações diz "não respondeu" | function `status-integracoes` não publicada |
-| Cron com 401 a cada minuto | function republicada SEM `--no-verify-jwt` |
+| Cron com 401 a cada minuto | function republicada SEM `--no-verify-jwt`, ou `sched_secret` do Vault diferente do `SCHED_SECRET` |
+| Agendado não sai | veja `select * from net._http_response order by created desc limit 5;` |
+| E-mail não chega | domínio não verificado na Resend, ou caiu no spam |
+| "RESEND_API_KEY não configurada" | falta o secret da Resend |
+| Agendado virou erro "Nenhum destinatário" | o alvo estava vazio (tag sem ninguém, lista sem e-mail válido) |
+| Taxa de abertura sempre "-" | webhook da Resend não cadastrado, ou tracking desligado no domínio |
 
 (A tabela cresce a cada fase.)
