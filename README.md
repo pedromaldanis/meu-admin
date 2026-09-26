@@ -140,6 +140,7 @@ O SQL de cada cron vem na fase correspondente. Ver os crons: `select * from cron
 | Sintoma | Causa mais comum |
 |---|---|
 | Login diz "não tem acesso de admin" | faltou rodar o bloco PRIMEIRO ADMIN do `01-fundacao.sql` |
+| Erro 403 / "permission denied for table" | faltou o `grant ... to authenticated` da tabela (projetos novos do Supabase não liberam sozinhos) |
 | Tela de login avisa "Falta preencher js/config.js" | URL e chave anon ainda não coladas |
 | Card de integrações diz "não respondeu" | function `status-integracoes` não publicada |
 | Cron com 401 a cada minuto | function republicada SEM `--no-verify-jwt` |

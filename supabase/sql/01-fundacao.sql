@@ -96,6 +96,16 @@ insert into public.configuracoes (chave, valor) values
 on conflict (chave) do nothing;
 
 -- ---------------------------------------------------------------------
+-- PERMISSÕES DA API
+-- Projetos novos do Supabase não dão acesso automático às tabelas.
+-- Sem estes grants, o painel toma 403 mesmo com RLS certo.
+-- Só "authenticated" recebe acesso; quem filtra linha a linha é o RLS.
+-- ---------------------------------------------------------------------
+revoke all on public.usuarios, public.configuracoes from anon;
+revoke truncate, references, trigger on public.usuarios, public.configuracoes from authenticated;
+grant select, insert, update, delete on public.usuarios, public.configuracoes to authenticated;
+
+-- ---------------------------------------------------------------------
 -- PRIMEIRO ADMIN
 -- 1) Crie o usuário em Authentication > Users > Add user
 --    (e-mail pedro@pedromaldanis.com.br, senha forte, "Auto Confirm User" ligado).
