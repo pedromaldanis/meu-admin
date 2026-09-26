@@ -18,6 +18,27 @@ async function avisar(db: SupabaseClient, assunto: string, texto: string) {
 
 servir(async (req) => {
   const { db } = await exigirAdminOuSched(req);
+  const body = await req.json().catch(() => ({}));
+
+  // Modo "só verificar": confere o token e a conta sem renovar
+  // (a Meta só renova token com mais de 24h de vida)
+  if (body.acao === "verificar") {
+    const me = await graph(db, "/me?fields=id,user_id,username,account_type");
+    if (!me.ok) {
+      const erro = me.json?.error?.message ?? `HTTP ${me.status}`;
+      await db.from("ig_token_status").upsert({ id: 1, ok: false, erro, updated_at: new Date().toISOString() });
+      return json({ ok: false, erro });
+    }
+    const { data: st } = await db.from("ig_token_status").select("expires_at").eq("id", 1).maybeSingle();
+    await db.from("ig_token_status").upsert({
+      id: 1, ok: true, erro: null, username: me.json.username, account_id: me.json.user_id ?? me.json.id,
+      // Token recém-gerado vale 60 dias; a primeira renovação corrige a data exata
+      expires_at: st?.expires_at ?? new Date(Date.now() + 60 * 86_400_000).toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    return json({ ok: true, conta: me.json });
+  }
+
   const atual = await token(db);
 
   const r = await fetch(`https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${encodeURIComponent(atual)}`);
