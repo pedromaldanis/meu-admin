@@ -181,7 +181,7 @@ async function montar(db: SupabaseClient, days: number, todosPosts: Post[], nums
     const foto = fotosMap.get(dia);
     if (foto != null) total = foto;
     seguidoresSerie.unshift({ dia, v: total, ...(foto == null ? { estimado: true } : {}) });
-    total -= novosMap.get(dia) ?? 0;
+    total = Math.max(0, total - (novosMap.get(dia) ?? 0));
   }
   const seguidoresInicio = seguidoresSerie[0]?.v ?? conta.followers_count;
 
