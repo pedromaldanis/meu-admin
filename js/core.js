@@ -108,6 +108,7 @@
       const btn = document.createElement("button");
       btn.className = "btn " + (b.classe || "btn-secundario");
       btn.textContent = b.texto;
+      if (b.requer) btn.dataset.requer = b.requer;
       btn.addEventListener("click", () => (b.acao ? b.acao(fechar, btn) : fechar()));
       rodape.appendChild(btn);
     });
@@ -293,9 +294,57 @@
     return tudo;
   }
 
+  // ---------------------------------------------------------------------
+  // Recursos que dependem de chave (IA paga e transcrição).
+  // Tudo com data-requer="ia" ou data-requer="transcricao" ganha um cadeado
+  // e fica desligado enquanto a chave não existir.
+  // ---------------------------------------------------------------------
+  const SELOS = {
+    ia: { texto: "🔒 IA paga", dica: "Precisa da chave de IA da Anthropic, que é paga (uns US$ 3 a 6 por mês). Sem ela, isso fica desligado. Veja ⚙️ Configurações." },
+    transcricao: { texto: "🔒 falta chave", dica: "Precisa da chave da Supadata (tem plano grátis). Sem ela, a transcrição fica desligada. Veja ⚙️ Configurações." },
+  };
+  const recursos = { ia: null, transcricao: null };
+
+  function selo(tipo) {
+    const s = SELOS[tipo];
+    return s && recursos[tipo] === false ? `<span class="selo-pago" title="${esc(s.dica)}">${s.texto}</span>` : "";
+  }
+
+  function marcarPagos(raiz = document) {
+    raiz.querySelectorAll?.("[data-requer]").forEach((el) => {
+      const tipo = el.dataset.requer;
+      const falta = recursos[tipo] === false;
+      el.classList.toggle("requer-pago", falta);
+      if (el.matches("button, input, select, textarea")) {
+        if (falta) { el.disabled = true; el.title = SELOS[tipo].dica; el.dataset.travado = "1"; }
+        else if (el.dataset.travado) { el.disabled = false; el.removeAttribute("title"); delete el.dataset.travado; }
+      }
+      const prox = el.nextElementSibling;
+      const temSelo = prox?.classList.contains("selo-pago");
+      if (falta && !temSelo) el.insertAdjacentHTML("afterend", selo(tipo));
+      if (!falta && temSelo) prox.remove();
+    });
+  }
+
+  async function carregarRecursos() {
+    try {
+      const r = await chamarFunction("status-integracoes");
+      const ok = (nome) => (r.integracoes || []).some((i) => (i.itens || []).some((x) => x.nome === nome && x.ok));
+      recursos.ia = ok("ANTHROPIC_API_KEY");
+      recursos.transcricao = ok("SUPADATA_API_KEY");
+    } catch { /* sem resposta: não trava nada */ }
+    marcarPagos();
+    // Modais e listas desenhados depois também ganham o cadeado
+    new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => {
+      if (n.nodeType === 1) { if (n.matches?.("[data-requer]")) marcarPagos(n.parentElement || document); marcarPagos(n); }
+    }))).observe(document.body, { childList: true, subtree: true });
+    return recursos;
+  }
+
   window.U = {
     FUSO, configFaltando, esc, dataHora, data, hora, numero, iniciais, guardar,
     toast, modal, confirmar, comCarregando, chamarFunction, ordenarPor, semAcento,
     tabela, baixarCSV, spParaISO, spInput, copiar, buscarTudo,
+    recursos, selo, marcarPagos, carregarRecursos,
   };
 })();

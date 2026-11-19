@@ -426,7 +426,7 @@
               <button class="btn btn-primario" id="i-c-atualizar">🔄 Baixar e analisar</button>
             </div>
             <div class="grade-2">
-              <div class="card"><h3 class="bloco-titulo">🗣️ Temas mais falados</h3><div id="i-c-temas"></div></div>
+              <div class="card"><h3 class="bloco-titulo"><span data-requer="ia">🗣️ Temas mais falados</span></h3><div id="i-c-temas"></div></div>
               <div class="card"><h3 class="bloco-titulo">💖 Top fãs</h3><div id="i-c-fas"></div></div>
             </div>
             <div class="secao">
@@ -437,7 +437,7 @@
 
           <div class="subaba" data-sub="revisao">
             <div class="linha" style="justify-content:space-between;margin-bottom:16px">
-              <div class="muted pequeno" id="i-r-quando">A revisão roda sozinha todo dia às 11h.</div>
+              <div class="muted pequeno"><span id="i-r-quando" data-requer="ia">A revisão roda sozinha todo dia às 11h. Sem a IA paga, ela traz só os números.</span></div>
               <button class="btn btn-primario" id="i-r-refazer">✨ Refazer revisão de hoje</button>
             </div>
             <div id="i-r-hoje"></div>
@@ -490,7 +490,7 @@
               <p>Quadro de ideias, roteiros cena a cena, carrosséis prontos pra baixar e referências transcritas.</p>
             </div>
             <div class="cabecalho-acoes">
-              <button class="btn btn-secundario" id="c-gerar">✨ Gerar ideias</button>
+              <button class="btn btn-secundario" id="c-gerar" data-requer="ia">✨ Gerar ideias</button>
               <button class="btn btn-primario" id="c-nova">➕ Nova ideia</button>
             </div>
           </div>
@@ -534,12 +534,12 @@
                   <div class="campo"><label for="c-v-exemplos">Textos seus (exemplos)</label><textarea class="textarea" id="c-v-exemplos" style="min-height:160px" placeholder="Cole legendas ou roteiros que são a sua cara. Separe um do outro com uma linha só com ---"></textarea></div>
                 </div>
                 <div class="form-acoes">
-                  <button class="btn btn-secundario" type="button" id="c-v-testar">🧪 Testar minha voz</button>
+                  <button class="btn btn-secundario" type="button" id="c-v-testar" data-requer="ia">🧪 Testar minha voz</button>
                   <button class="btn btn-primario" type="submit">💾 Salvar</button>
                 </div>
               </form>
               <div class="card">
-                <h3 class="bloco-titulo">🧪 Teste de voz</h3>
+                <h3 class="bloco-titulo"><span data-requer="ia">🧪 Teste de voz</span></h3>
                 <div id="c-v-teste"><p class="muted pequeno">Salve e clique em Testar: a IA escreve 3 legendas curtas pra você ver se soa como você.</p></div>
               </div>
             </div>
@@ -566,7 +566,7 @@
                 <option value="minha">🙋 Meu</option>
               </select>
               <input class="input" id="c-r-tags" placeholder="tags, separadas por vírgula" style="max-width:220px">
-              <button class="btn btn-primario" type="submit">🎙️ Transcrever</button>
+              <button class="btn btn-primario" type="submit" data-requer="transcricao">🎙️ Transcrever</button>
             </form>
             <div class="tabela-ferramentas card" style="margin-bottom:16px">
               <input class="input" id="c-r-busca" placeholder="🔎 Buscar na biblioteca">
@@ -575,7 +575,7 @@
                 <option value="minha">🙋 Meus</option>
                 <option value="outra">👀 De outros</option>
               </select>
-              <button class="btn btn-secundario btn-p" id="c-r-estudar" style="margin-left:auto">🧠 Estudar esses roteiros</button>
+              <button class="btn btn-secundario btn-p" id="c-r-estudar" style="margin-left:auto" data-requer="ia">🧠 Estudar esses roteiros</button>
             </div>
             <div id="c-r-estudo"></div>
             <div class="grade grade-referencias" id="c-r-grade"></div>

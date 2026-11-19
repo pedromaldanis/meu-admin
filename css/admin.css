@@ -544,6 +544,12 @@ input[type="datetime-local"] { color-scheme: dark; }
 details.card summary { cursor: pointer; font-weight: 600; }
 details.card[open] summary { margin-bottom: 14px; }
 
+/* Cadeado de recurso que depende de chave paga */
+.selo-pago { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; padding: 2px 9px; border-radius: 999px;
+  background: rgba(255, 200, 87, 0.14); color: var(--aviso); font-size: 12px; font-weight: 600; white-space: nowrap; vertical-align: middle; cursor: help; }
+.requer-pago { opacity: 0.55; }
+button.requer-pago { cursor: not-allowed; }
+
 /* ---------------------------------------------------------------------
    FASE 4: 📊 Instagram
    --------------------------------------------------------------------- */

@@ -135,7 +135,7 @@
           await sb.from("ideias").delete().eq("id", id); fechar(); carregarIdeias(); U.toast("Apagada");
         } }] : []),
         { texto: "📋 Copiar roteiro", classe: "btn-fantasma", acao: () => U.copiar(textoRoteiro(ler())) },
-        { texto: "✨ Gerar roteiro com IA", classe: "btn-secundario", acao: async (_f, btn) => {
+        { texto: "✨ Gerar roteiro com IA", classe: "btn-secundario", requer: "ia", acao: async (_f, btn) => {
           const d = ler();
           if (!d.titulo) return U.toast("Escreva o título primeiro.", "aviso");
           try {
@@ -356,7 +356,7 @@
     $("c-k-editor").innerHTML = `
       <div class="linha" style="margin-bottom:14px">
         <input class="input" id="ck-titulo" value="${U.esc(c.titulo)}" style="flex:1;min-width:200px;font-weight:600">
-        <button class="btn btn-secundario btn-p" id="ck-ia">✨ Textos com IA</button>
+        <button class="btn btn-secundario btn-p" id="ck-ia" data-requer="ia">✨ Textos com IA</button>
         <button class="btn btn-secundario btn-p" id="ck-baixar">⬇️ Baixar PNGs</button>
         <button class="btn btn-primario btn-p" id="ck-salvar">💾 Salvar</button>
         ${c.id ? '<button class="btn btn-perigo btn-p" id="ck-apagar" aria-label="Apagar carrossel">🗑️</button>' : ""}
@@ -629,6 +629,7 @@
     const btn = $("c-r-estudar");
     btn.disabled = data?.status === "processando";
     btn.textContent = data?.status === "processando" ? "⏳ Estudando..." : "🧠 Estudar esses roteiros";
+    U.marcarPagos(btn.parentElement);
     if (!data || data.status === "vazio") { el.innerHTML = ""; return; }
     if (data.status === "processando") {
       el.innerHTML = '<div class="aviso info" style="margin-bottom:16px">🧠 Estudando os roteiros em segundo plano. Leva uns 2 minutos.</div>';

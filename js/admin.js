@@ -126,5 +126,6 @@
     ligarEventos();
     document.body.classList.remove("carregando");
     irPara(U.guardar.ler(CHAVE_ABA, ABA_PADRAO));
+    U.carregarRecursos();
   })();
 })();
