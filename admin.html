@@ -360,24 +360,124 @@
               <p>Seus números, seus melhores posts, o que o público pergunta e uma revisão diária do que fazer hoje.</p>
             </div>
             <div class="cabecalho-acoes">
-              <button class="btn btn-secundario" data-em-breve="4">📝 Revisão do dia</button>
-              <button class="btn btn-primario" data-em-breve="4">🔄 Atualizar dados</button>
+              <div class="segmentado" id="i-periodo" role="group" aria-label="Período">
+                <button data-dias="7">7 dias</button>
+                <button data-dias="30" class="ativo">30 dias</button>
+                <button data-dias="90">90 dias</button>
+                <button data-dias="0">Tudo</button>
+              </div>
+              <button class="btn btn-primario" id="i-atualizar">🔄 Atualizar</button>
             </div>
           </div>
-          <div class="grade">
-            <div class="card card-numero"><div class="rotulo">👁️ Alcance</div><div class="numero">-</div><div class="variacao">últimos 30 dias</div></div>
-            <div class="card card-numero"><div class="rotulo">👥 Seguidores</div><div class="numero">-</div><div class="variacao">variação no período</div></div>
-            <div class="card card-numero"><div class="rotulo">▶️ Views</div><div class="numero">-</div></div>
-            <div class="card card-numero"><div class="rotulo">💬 Interações</div><div class="numero">-</div></div>
-            <div class="card card-numero"><div class="rotulo">🔖 Salvamentos</div><div class="numero">-</div></div>
-            <div class="card card-numero"><div class="rotulo">📈 Engajamento</div><div class="numero">-</div></div>
+          <div class="muted pequeno" id="i-atualizado" style="margin:-12px 0 16px">...</div>
+          <div class="aviso oculto" id="i-aviso" style="margin-bottom:16px"></div>
+
+          <nav class="subabas" aria-label="Seções do Instagram">
+            <button data-sub="visao" class="ativo">📈 Visão geral</button>
+            <button data-sub="posts">🖼️ Posts</button>
+            <button data-sub="comentarios">💬 Comentários</button>
+            <button data-sub="revisao">📝 Revisão do dia</button>
+            <button data-sub="concorrentes">🔭 Concorrentes</button>
+            <button data-sub="objetivos">🎯 Objetivos</button>
+          </nav>
+
+          <div class="subaba ativa" data-sub="visao">
+            <div class="grade grade-numeros" id="i-cards"></div>
+            <div class="grade-2" style="margin-top:16px">
+              <div class="card"><h3 class="bloco-titulo">👁️ Alcance por dia</h3><div class="grafico"><canvas id="i-g-alcance"></canvas></div></div>
+              <div class="card"><h3 class="bloco-titulo">👥 Seguidores por dia</h3><div class="grafico"><canvas id="i-g-seguidores"></canvas></div>
+                <p class="muted pequeno" id="i-g-seg-nota" style="margin-top:8px"></p></div>
+            </div>
+            <div class="secao">
+              <h2 class="secao-titulo">🏆 Top 5 posts do período</h2>
+              <div class="grade grade-top" id="i-top5"></div>
+            </div>
+            <div class="secao">
+              <div class="linha" style="justify-content:space-between;margin-bottom:14px">
+                <h2 class="secao-titulo" style="margin:0">💸 Períodos impulsionados</h2>
+                <button class="btn btn-secundario btn-p" id="i-pago-novo">➕ Marcar período pago</button>
+              </div>
+              <p class="secao-sub">Marque os dias em que você impulsionou posts. O painel avisa quando o período escolhido mistura pago com orgânico e pinta esses dias no gráfico.</p>
+              <div class="tabela-caixa"><div id="i-pagos"></div></div>
+            </div>
           </div>
-          <div class="secao">
-            <div class="vazio">
-              <div class="vazio-emoji">📊</div>
-              <h3>Ainda sem dados.</h3>
-              <p>Que tal conectar o Instagram primeiro? Depois é só clicar em Atualizar pra ver alcance, seguidores e os melhores posts. Isso chega na FASE 4.</p>
-              <button class="btn btn-secundario" data-ir-aba="configuracoes">⚙️ Ver integrações</button>
+
+          <div class="subaba" data-sub="posts">
+            <div class="tabela-caixa">
+              <div class="tabela-ferramentas">
+                <input class="input" id="i-p-busca" placeholder="🔎 Buscar na legenda">
+                <select class="select select-p" id="i-p-formato">
+                  <option value="">Todos os formatos</option>
+                  <option value="REELS">🎬 Reels</option>
+                  <option value="CAROUSEL_ALBUM">🗂️ Carrossel</option>
+                  <option value="IMAGE">🖼️ Foto</option>
+                  <option value="VIDEO">📹 Vídeo</option>
+                </select>
+                <span class="muted pequeno" style="margin-left:auto;align-self:center">Clique num post pra ver todos os números</span>
+              </div>
+              <div id="i-p-tabela"></div>
+            </div>
+          </div>
+
+          <div class="subaba" data-sub="comentarios">
+            <div class="card linha" style="justify-content:space-between;margin-bottom:16px">
+              <div><strong>💬 Comentários dos últimos 30 posts</strong>
+                <div class="muted pequeno" id="i-c-status">...</div></div>
+              <button class="btn btn-primario" id="i-c-atualizar">🔄 Baixar e analisar</button>
+            </div>
+            <div class="grade-2">
+              <div class="card"><h3 class="bloco-titulo">🗣️ Temas mais falados</h3><div id="i-c-temas"></div></div>
+              <div class="card"><h3 class="bloco-titulo">💖 Top fãs</h3><div id="i-c-fas"></div></div>
+            </div>
+            <div class="secao">
+              <h2 class="secao-titulo">❓ Perguntas sem resposta</h2>
+              <div class="grade grade-perguntas" id="i-c-perguntas"></div>
+            </div>
+          </div>
+
+          <div class="subaba" data-sub="revisao">
+            <div class="linha" style="justify-content:space-between;margin-bottom:16px">
+              <div class="muted pequeno" id="i-r-quando">A revisão roda sozinha todo dia às 11h.</div>
+              <button class="btn btn-primario" id="i-r-refazer">✨ Refazer revisão de hoje</button>
+            </div>
+            <div id="i-r-hoje"></div>
+            <div class="secao">
+              <h2 class="secao-titulo">🗓️ Últimos 30 dias</h2>
+              <div class="tabela-caixa"><div id="i-r-hist"></div></div>
+            </div>
+          </div>
+
+          <div class="subaba" data-sub="concorrentes">
+            <form class="card linha" id="i-k-form" style="margin-bottom:16px">
+              <input class="input" id="i-k-user" placeholder="@perfil (conta profissional pública)" style="max-width:320px" autocomplete="off">
+              <button class="btn btn-primario" type="submit">➕ Acompanhar</button>
+              <button class="btn btn-secundario" type="button" id="i-k-atualizar" style="margin-left:auto">🔄 Atualizar todos</button>
+              <span class="muted pequeno" style="width:100%">Até 10 perfis. A foto de cada um é tirada sozinha todo dia às 4h.</span>
+            </form>
+            <div id="i-k-destaque"></div>
+            <div class="grade grade-concorrentes" id="i-k-grade" style="margin-top:16px"></div>
+          </div>
+
+          <div class="subaba" data-sub="objetivos">
+            <div class="grade-2">
+              <div>
+                <div class="linha" style="justify-content:space-between;margin-bottom:14px">
+                  <h2 class="secao-titulo" style="margin:0">🎯 Metas</h2>
+                  <button class="btn btn-secundario btn-p" id="i-o-nova">➕ Nova meta</button>
+                </div>
+                <div class="grade" id="i-o-lista" style="grid-template-columns:1fr"></div>
+              </div>
+              <div class="card">
+                <div class="linha" style="justify-content:space-between;margin-bottom:12px">
+                  <h3 class="bloco-titulo" style="margin:0">📅 Dias que você postou</h3>
+                  <div class="linha">
+                    <button class="btn btn-fantasma btn-p" id="i-o-ant" aria-label="Mês anterior">‹</button>
+                    <strong id="i-o-mes"></strong>
+                    <button class="btn btn-fantasma btn-p" id="i-o-prox" aria-label="Próximo mês">›</button>
+                  </div>
+                </div>
+                <div class="calendario" id="i-o-cal"></div>
+              </div>
             </div>
           </div>
         </section>
@@ -390,17 +490,95 @@
               <p>Quadro de ideias, roteiros cena a cena, carrosséis prontos pra baixar e referências transcritas.</p>
             </div>
             <div class="cabecalho-acoes">
-              <button class="btn btn-secundario" data-em-breve="5">✨ Gerar ideias</button>
-              <button class="btn btn-primario" data-em-breve="5">➕ Nova ideia</button>
+              <button class="btn btn-secundario" id="c-gerar">✨ Gerar ideias</button>
+              <button class="btn btn-primario" id="c-nova">➕ Nova ideia</button>
             </div>
           </div>
-          <div class="secao">
-            <div class="vazio">
-              <div class="vazio-emoji">💡</div>
-              <h3>Seu quadro está vazio.</h3>
-              <p>Que tal anotar aquela ideia que está na sua cabeça desde ontem? O quadro de ideias chega na FASE 5.</p>
-              <button class="btn btn-primario" data-em-breve="5">➕ Anotar ideia</button>
+
+          <nav class="subabas" aria-label="Seções dos criativos">
+            <button data-sub="quadro" class="ativo">🗂️ Quadro</button>
+            <button data-sub="voz">🎙️ Minha voz</button>
+            <button data-sub="carrossel">🎠 Carrossel</button>
+            <button data-sub="referencias">📚 Roteiros de referência</button>
+          </nav>
+
+          <div class="subaba ativa" data-sub="quadro">
+            <div class="tabela-ferramentas card" style="margin-bottom:16px">
+              <input class="input" id="c-busca" placeholder="🔎 Buscar ideia">
+              <select class="select select-p" id="c-f-formato">
+                <option value="">Todos os formatos</option>
+                <option value="reel">🎬 Reel</option>
+                <option value="carrossel">🗂️ Carrossel</option>
+                <option value="story">📱 Story</option>
+                <option value="foto">🖼️ Foto</option>
+                <option value="live">🔴 Live</option>
+              </select>
+              <select class="select select-p" id="c-f-tag"><option value="">Todas as tags</option></select>
+              <span class="muted pequeno" style="margin-left:auto;align-self:center">Arraste os cards entre as colunas</span>
             </div>
+            <div class="kanban" id="c-kanban"></div>
+          </div>
+
+          <div class="subaba" data-sub="voz">
+            <div class="grade-2">
+              <form class="card" id="c-v-form">
+                <h3 class="bloco-titulo">🎙️ Como você fala</h3>
+                <div class="form-grade" style="grid-template-columns:1fr">
+                  <div class="campo"><label for="c-v-tom">Tom de voz</label><textarea class="textarea" id="c-v-tom" style="min-height:70px" placeholder="Ex.: direto, bem-humorado, fala como amigo que entende do assunto"></textarea></div>
+                  <div class="campo"><label for="c-v-publico">Público</label><textarea class="textarea" id="c-v-publico" style="min-height:70px" placeholder="Quem te segue e o que essa pessoa quer"></textarea></div>
+                  <div class="campo"><label for="c-v-pilares">Pilares de conteúdo</label><textarea class="textarea" id="c-v-pilares" style="min-height:70px" placeholder="1 por linha"></textarea></div>
+                  <div class="campo"><label for="c-v-expressoes">Expressões que você usa</label><textarea class="textarea" id="c-v-expressoes" style="min-height:70px" placeholder="1 por linha"></textarea></div>
+                  <div class="campo"><label for="c-v-evitar">Evitar</label><textarea class="textarea" id="c-v-evitar" style="min-height:70px" placeholder="Palavras, temas ou jeitos de falar que não são você. 1 por linha"></textarea></div>
+                  <div class="campo"><label for="c-v-objetivos">Objetivos, em ordem</label><input class="input" id="c-v-objetivos" placeholder="crescer, engajar, vender">
+                    <span class="ajuda">Use crescer, engajar e vender, separados por vírgula, do mais importante pro menos.</span></div>
+                  <div class="campo"><label for="c-v-exemplos">Textos seus (exemplos)</label><textarea class="textarea" id="c-v-exemplos" style="min-height:160px" placeholder="Cole legendas ou roteiros que são a sua cara. Separe um do outro com uma linha só com ---"></textarea></div>
+                </div>
+                <div class="form-acoes">
+                  <button class="btn btn-secundario" type="button" id="c-v-testar">🧪 Testar minha voz</button>
+                  <button class="btn btn-primario" type="submit">💾 Salvar</button>
+                </div>
+              </form>
+              <div class="card">
+                <h3 class="bloco-titulo">🧪 Teste de voz</h3>
+                <div id="c-v-teste"><p class="muted pequeno">Salve e clique em Testar: a IA escreve 3 legendas curtas pra você ver se soa como você.</p></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="subaba" data-sub="carrossel">
+            <div class="carrossel-grade">
+              <div class="card">
+                <div class="linha" style="justify-content:space-between;margin-bottom:12px">
+                  <h3 class="bloco-titulo" style="margin:0">🎠 Carrosséis</h3>
+                  <button class="btn btn-secundario btn-p" id="c-k-novo">➕ Novo</button>
+                </div>
+                <div id="c-k-lista"></div>
+              </div>
+              <div class="card" id="c-k-editor"></div>
+            </div>
+          </div>
+
+          <div class="subaba" data-sub="referencias">
+            <form class="card linha" id="c-r-form" style="margin-bottom:16px">
+              <input class="input" id="c-r-url" placeholder="🔗 Link do vídeo (Instagram, TikTok ou YouTube)" style="flex:1;min-width:240px">
+              <select class="select select-p" id="c-r-dequem">
+                <option value="outra">👀 De outra pessoa</option>
+                <option value="minha">🙋 Meu</option>
+              </select>
+              <input class="input" id="c-r-tags" placeholder="tags, separadas por vírgula" style="max-width:220px">
+              <button class="btn btn-primario" type="submit">🎙️ Transcrever</button>
+            </form>
+            <div class="tabela-ferramentas card" style="margin-bottom:16px">
+              <input class="input" id="c-r-busca" placeholder="🔎 Buscar na biblioteca">
+              <select class="select select-p" id="c-r-filtro">
+                <option value="">Todos</option>
+                <option value="minha">🙋 Meus</option>
+                <option value="outra">👀 De outros</option>
+              </select>
+              <button class="btn btn-secundario btn-p" id="c-r-estudar" style="margin-left:auto">🧠 Estudar esses roteiros</button>
+            </div>
+            <div id="c-r-estudo"></div>
+            <div class="grade grade-referencias" id="c-r-grade"></div>
           </div>
         </section>
 
@@ -553,6 +731,8 @@
   <script src="js/core.js"></script>
   <script src="js/abas/disparo.js"></script>
   <script src="js/abas/automacao.js"></script>
+  <script src="js/abas/instagram.js"></script>
+  <script src="js/abas/criativos.js"></script>
   <script src="js/abas/configuracoes.js"></script>
   <script src="js/admin.js"></script>
 </body>

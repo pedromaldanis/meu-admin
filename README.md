@@ -13,8 +13,8 @@ Painel de admin só meu: disparo de e-mails, automação do Instagram, revisão 
 | 1 | Fundação: login, painel, configurações | ✅ pronta |
 | 2 | 📧 Disparo de e-mails | ✅ pronta |
 | 3 | 🤖 Automação do Instagram | ✅ pronta |
-| 4 | 📊 Revisão do Instagram | ⏳ |
-| 5 | 💡 Criativos e ideias | ⏳ |
+| 4 | 📊 Revisão do Instagram | ✅ pronta |
+| 5 | 💡 Criativos e ideias | ✅ pronta |
 
 ---
 
@@ -112,6 +112,25 @@ E abra `http://localhost:8080/login.html`.
 
 Padrão conservador: **10 por minuto, 60 por hora, 150 por dia** (uma conta foi freada com cerca de 210 envios num dia, mesmo dentro das regras). **3 erros de limite seguidos pausam tudo por 1 hora** e aparecem no painel. Dá pra pausar e retomar na mão na sub-aba 🛑 Freio.
 
+## 2.3 FASE 4: revisão do Instagram
+
+1. **SQL:** `supabase/sql/04-instagram-revisao.sql` (caches, concorrentes, metas, períodos pagos e os robôs `ig-insights-aquecer` e `ig-review-diaria`).
+2. **Functions:** `ig-insights`, `ig-comments`, `ig-review`, `ig-competitors`.
+3. **IA:** secret `ANTHROPIC_API_KEY` (console.anthropic.com > API Keys). Sem ela os números aparecem, mas a interpretação da revisão e os temas dos comentários ficam desligados. Modelo: `claude-opus-5-5`, resposta em JSON validado.
+4. **Limite da Meta (~200 chamadas por hora):** os números de cada post ficam em `ig_media_insights` e só são buscados de novo quando vencem (3h pra post de até 3 dias, 1 dia até 30 dias, 7 dias depois). No máximo 60 posts por execução.
+5. **Concorrentes** usam o `business_discovery`, que a Meta só libera no login pelo Facebook (login unificado). No login antigo do Instagram aparece um aviso no card.
+
+Sub-abas: 📈 Visão geral (6 cards, gráficos em canvas, top 5, períodos pagos), 🖼️ Posts (tabela e detalhe), 💬 Comentários (temas, perguntas sem resposta com "responder no comentário", top fãs), 📝 Revisão do dia (5 blocos e histórico de 30 dias), 🔭 Concorrentes (até 10), 🎯 Objetivos (metas que se atualizam e calendário de posts).
+
+## 2.4 FASE 5: criativos e ideias
+
+1. **SQL:** `supabase/sql/05-criativos.sql` (`perfil_voz`, `ideias`, `roteiros`, `carrosseis`, `ia_resultados`).
+2. **Functions:** `ideias-ia` (gerar 10 ideias, a partir de um tema, variações de um post, roteiro, testar voz, textos do carrossel), `transcrever` (Supadata, em segundo plano) e `estudar-roteiros` (em segundo plano).
+3. **Transcrição:** secret `SUPADATA_API_KEY` (supadata.ai). Vídeo longo entra na fila da Supadata; se passar de ~2 minutos, abra o roteiro e clique em Continuar. Conteúdo vazio = vídeo só com música.
+4. **Duração do roteiro:** 2,5 palavras por segundo (fala normal).
+
+Sub-abas: 🗂️ Quadro (kanban com arrastar, favoritas no topo, filtros), editor da ideia (roteiro cena a cena, checklist, gerar com IA, marcar como postado), 🎙️ Minha voz (com teste de 3 legendas), 🎠 Carrossel (canvas 1080x1350, 3 modelos, baixa PNG), 📚 Roteiros de referência (transcrever, biblioteca e "estudar esses roteiros").
+
 ## 3. Secrets (Edge Functions)
 
 Configurados com `supabase secrets set NOME=valor --project-ref SEU_REF`. **Nunca** vão pro HTML, pro repositório ou pra tela. A aba ⚙️ Configurações só mostra se cada um existe.
@@ -125,7 +144,7 @@ Configurados com `supabase secrets set NOME=valor --project-ref SEU_REF`. **Nunc
 | `IG_ACCOUNT_ID` | id numérico da conta do Instagram | 3 |
 | `APP_SECRET` | chave secreta do app do **Instagram** (não a do Facebook) | 3 |
 | `VERIFY_TOKEN` | texto do handshake do webhook da Meta | 3 |
-| `ANTHROPIC_API_KEY` ou `OPENAI_API_KEY` | IA (revisão, ideias, análises) | 4 |
+| `ANTHROPIC_API_KEY` | IA: revisão do dia, temas dos comentários, ideias, roteiros, carrossel e estudo de roteiros | 4 |
 | `SUPADATA_API_KEY` | transcrever vídeos | 5 |
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY` e `SUPABASE_SERVICE_ROLE_KEY` já existem sozinhos dentro das functions.
@@ -150,10 +169,10 @@ Configurados com `supabase secrets set NOME=valor --project-ref SEU_REF`. **Nunc
 | `ig-media` | painel | JWT + role admin | normal | 3 |
 | `ig-test-send` | painel | JWT + role admin | normal | 3 |
 | `ig-broadcast` | painel | JWT + role admin | normal | 3 |
-| `ig-insights` | painel + cron (4h) | JWT admin ou `x-sched-key` | a definir na FASE 4 | 4 |
+| `ig-insights` | painel + cron (4h) | JWT admin ou `x-sched-key` | **`--no-verify-jwt`** | 4 |
 | `ig-comments` | painel | JWT + role admin | normal | 4 |
-| `ig-review` | painel + cron (11h) | JWT admin ou `x-sched-key` | a definir na FASE 4 | 4 |
-| `ig-competitors` | painel | JWT + role admin | normal | 4 |
+| `ig-review` | painel + cron (11h) | JWT admin ou `x-sched-key` | **`--no-verify-jwt`** | 4 |
+| `ig-competitors` | painel + cron (4h) | JWT admin ou `x-sched-key` | **`--no-verify-jwt`** | 4 |
 | `ideias-ia` | painel | JWT + role admin | normal | 5 |
 | `transcrever` | painel | JWT + role admin | normal | 5 |
 | `estudar-roteiros` | painel | JWT + role admin | normal | 5 |
@@ -169,8 +188,8 @@ Deploy de cron/webhook: `supabase functions deploy NOME --project-ref SEU_REF --
 | `ig-scheduler` ✅ | a cada 1 minuto | `ig-scheduler` |
 | `ig-token-refresh` ✅ | toda segunda, 9h de SP | `ig-token-refresh` |
 | `ig-limpar-ecos` ✅ | todo dia, 4h17 UTC | apaga `ig_bot_sends` com mais de 7 dias (SQL puro) |
-| `ig-insights-aquecer` | todo dia, 4h de SP | `ig-insights` |
-| `ig-review-diaria` | todo dia, 11h de SP | `ig-review` |
+| `ig-insights-aquecer` ✅ | todo dia, 4h de SP | `ig-insights` (7, 30 e 90 dias) e `ig-competitors` |
+| `ig-review-diaria` ✅ | todo dia, 11h de SP | `ig-review` |
 
 O SQL de cada cron vem na fase correspondente. Ver os crons: `select * from cron.job;`. Ver as últimas execuções: `select * from cron.job_run_details order by start_time desc limit 20;`.
 
@@ -205,4 +224,10 @@ O SQL de cada cron vem na fase correspondente. Ver os crons: `select * from cron
 | Passo com atraso cancelado | a pessoa não falou nas últimas 24h (regra da Meta) |
 | Testar diz "ainda não conheço @conta" | mande uma DM da conta de teste pro seu perfil antes |
 
-(A tabela cresce a cada fase.)
+| Revisão do dia só com números | falta o secret `ANTHROPIC_API_KEY` |
+| "A chave de IA foi recusada" | chave copiada pela metade, ou sem crédito na Anthropic |
+| Insights com posts sem número | limite de chamadas da Meta: o resto vem na próxima atualização (ou no cron das 4h) |
+| Concorrente com aviso "não libera ver outros perfis" | conexão pelo login antigo do Instagram; o `business_discovery` só existe no login do Facebook |
+| Transcrição parada em "transcrevendo" | vídeo longo na fila da Supadata: abra e clique em Continuar |
+| "Falta a chave da Supadata" | falta o secret `SUPADATA_API_KEY` |
+| Comentários "analisando" pra sempre | a análise passou de 5 minutos; clique de novo em Baixar e analisar |

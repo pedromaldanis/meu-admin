@@ -2,7 +2,7 @@
 // Renova o token de 60 dias, guarda no Vault e avisa por e-mail se falhar ou faltar menos de 10 dias.
 import { exigirAdminOuSched, json, servir } from "../_shared/auth.ts";
 import { carregarRemetente, enviarUm } from "../_shared/email.ts";
-import { graph, token } from "../_shared/instagram.ts";
+import { graph, modoConexao, token } from "../_shared/instagram.ts";
 import type { SupabaseClient } from "jsr:@supabase/supabase-js@2";
 
 async function avisar(db: SupabaseClient, assunto: string, texto: string) {
@@ -37,6 +37,23 @@ servir(async (req) => {
       updated_at: new Date().toISOString(),
     });
     return json({ ok: true, conta: me.json });
+  }
+
+  // Login unificado: o token de usuário do sistema não vence, só confere se continua valendo
+  if ((await modoConexao(db)).modo === "unificado") {
+    const me = await graph(db, "/me?fields=id,username");
+    const ok = me.ok;
+    const erro = ok ? null : (me.json?.error?.message ?? `HTTP ${me.status}`);
+    await db.from("ig_token_status").upsert({
+      id: 1, ok, erro, refreshed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 3650 * 86_400_000).toISOString(),
+      ...(ok ? { username: me.json.username ?? null, account_id: me.json.id ?? null } : {}),
+    });
+    if (!ok) {
+      await avisar(db, "⚠️ Conexão com o Instagram caiu",
+        `O painel não conseguiu acessar o Instagram.<br><br><b>Erro:</b> ${erro}<br><br>Abra Configurações > Instagram e clique em Conectar Instagram de novo.`);
+    }
+    return json({ ok, erro, nunca_vence: true });
   }
 
   const atual = await token(db);

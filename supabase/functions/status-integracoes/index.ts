@@ -74,15 +74,16 @@ servir(async (req) => {
     }
   }
 
-  // ✨ IA
+  // ✨ IA (Claude) e 🎙️ transcrição (Supadata)
   const iaItens = [
-    item("ANTHROPIC_API_KEY", "Chave da Anthropic (console.anthropic.com).", false),
-    item("OPENAI_API_KEY", "Chave da OpenAI (platform.openai.com).", false),
-    item("SUPADATA_API_KEY", "Chave da Supadata, pra transcrever vídeos (FASE 5).", false),
+    item("ANTHROPIC_API_KEY", "Chave da Anthropic (console.anthropic.com > API Keys). Liga a revisão do dia, a análise de comentários e as ideias."),
+    item("SUPADATA_API_KEY", "Chave da Supadata (supadata.ai), pra transcrever vídeos de referência.", false),
   ];
-  const provedor = temSecret("ANTHROPIC_API_KEY") ? "Anthropic" : temSecret("OPENAI_API_KEY") ? "OpenAI" : null;
-  const iaStatus: Integracao["status"] = provedor ? "configurado" : "nao_configurado";
-  const iaResumo = provedor ? `Usando ${provedor}.` : "Nenhuma chave de IA ainda. As partes com IA ficam desligadas.";
+  const iaStatus: Integracao["status"] = temSecret("ANTHROPIC_API_KEY")
+    ? (temSecret("SUPADATA_API_KEY") ? "configurado" : "parcial") : "nao_configurado";
+  const iaResumo = temSecret("ANTHROPIC_API_KEY")
+    ? (temSecret("SUPADATA_API_KEY") ? "IA e transcrição ligadas." : "IA ligada. Falta a Supadata pra transcrever vídeos.")
+    : "Sem chave de IA: os números aparecem, mas a interpretação, as ideias e o carrossel com IA ficam desligados.";
 
   // ⏱️ Robôs (cron)
   const robosItens = [item("SCHED_SECRET", "Senha que o cron manda no header x-sched-key.")];

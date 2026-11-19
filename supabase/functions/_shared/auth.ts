@@ -103,3 +103,15 @@ export async function exigirAdminOuSched(req: Request): Promise<{ db: SupabaseCl
   const { db } = await exigirAdmin(req);
   return { db, origem: "painel" };
 }
+
+/** Secret do Vault (colado pelo painel) com o secret da function como reserva. */
+export async function segredo(db: SupabaseClient, nomeVault: string, nomeEnv: string): Promise<string | null> {
+  const { data } = await db.rpc("segredo_ler", { p_nome: nomeVault });
+  return (data as string | null)?.trim() || Deno.env.get(nomeEnv)?.trim() || null;
+}
+
+/** Configuração pública guardada na tabela configuracoes (ex.: ig_app_id). */
+export async function configuracao(db: SupabaseClient, chave: string, nomeEnv?: string): Promise<string | null> {
+  const { data } = await db.from("configuracoes").select("valor").eq("chave", chave).maybeSingle();
+  return (data?.valor as string | undefined)?.trim() || (nomeEnv ? Deno.env.get(nomeEnv)?.trim() : null) || null;
+}

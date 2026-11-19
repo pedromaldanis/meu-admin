@@ -30,22 +30,59 @@ export type EnvioResultado = { ok: boolean; mid?: string; erro?: string; rateLim
 // Token: o renovado (Vault) tem prioridade sobre o secret original
 // ---------------------------------------------------------------------
 let tokenCache: string | null = null;
+let tokenTs = 0;
 export async function token(db: SupabaseClient): Promise<string> {
-  if (tokenCache) return tokenCache;
+  if (tokenCache && Date.now() - tokenTs < 60_000) return tokenCache;
+  tokenTs = Date.now();
   const { data } = await db.rpc("ig_token_ler");
   tokenCache = (data as string | null)?.trim() || Deno.env.get("IG_ACCESS_TOKEN")?.trim() || "";
   if (!tokenCache) throw new Error("IG_ACCESS_TOKEN não configurado.");
   return tokenCache;
 }
 
+// ---------------------------------------------------------------------
+// Dois jeitos de conectar:
+//  "instagram"  (apps antigos): token do login do Instagram, API em graph.instagram.com, "/me" = a conta
+//  "unificado"  (apps novos da Meta, "login unificado"): token de usuário do sistema que nunca vence,
+//               API em graph.facebook.com e a conta é endereçada pelo id dela (ig_conta_id)
+// ---------------------------------------------------------------------
+export const FB_API = "https://graph.facebook.com/v21.0";
+let modoCache: { modo: string; conta: string; ts: number } | null = null;
+export async function modoConexao(db: SupabaseClient) {
+  if (modoCache && Date.now() - modoCache.ts < 60_000) return modoCache;
+  const { data } = await db.from("configuracoes").select("chave, valor").in("chave", ["ig_modo", "ig_conta_id"]);
+  const m = new Map((data ?? []).map((r: { chave: string; valor: string }) => [r.chave, String(r.valor ?? "").trim()]));
+  modoCache = { modo: m.get("ig_modo") || "instagram", conta: m.get("ig_conta_id") || "", ts: Date.now() };
+  return modoCache;
+}
+
 export async function graph(db: SupabaseClient, caminho: string, init: RequestInit = {}) {
   const t = await token(db);
-  const url = caminho.startsWith("http") ? caminho : IG_API + caminho;
+  let url = caminho;
+  let unificado = false;
+  if (!caminho.startsWith("http")) {
+    const { modo, conta } = await modoConexao(db);
+    unificado = modo === "unificado" && !!conta;
+    if (unificado) {
+      // "/me..." vira "/{id da conta}..." e saem os campos que só existem no graph.instagram.com
+      let c = caminho.replace(/^\/me(?=[/?]|$)/, `/${conta}`);
+      c = c.replace(/([?&]fields=)([^&]*)/, (_m, p, f) =>
+        p + f.split(",").filter((x: string) => x && x !== "user_id" && x !== "account_type").join(","));
+      url = FB_API + c;
+    } else {
+      url = IG_API + caminho;
+    }
+  }
   const r = await fetch(url, {
     ...init,
     headers: { Authorization: `Bearer ${t}`, "Content-Type": "application/json", ...(init.headers ?? {}) },
   });
   const j = await r.json().catch(() => ({}));
+  // No modo unificado o "id" da conta já é o id profissional (o mesmo que chega no webhook)
+  if (unificado && j && typeof j === "object" && j.id && !j.user_id && /^\/me(?=[?]|$)/.test(caminho)) {
+    j.user_id = j.id;
+    j.account_type = j.account_type ?? "BUSINESS";
+  }
   return { ok: r.ok && !j?.error, status: r.status, json: j };
 }
 

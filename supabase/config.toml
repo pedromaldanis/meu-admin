@@ -37,3 +37,26 @@ verify_jwt = true
 
 [functions.ig-broadcast]
 verify_jwt = true
+
+# ---------- FASE 4 ----------
+[functions.ig-insights]
+verify_jwt = false   # cron (x-sched-key) ou painel (confere o JWT de admin dentro da function)
+
+[functions.ig-comments]
+verify_jwt = true
+
+[functions.ig-review]
+verify_jwt = false   # cron (x-sched-key) ou painel (confere o JWT de admin dentro da function)
+
+[functions.ig-competitors]
+verify_jwt = false   # cron (x-sched-key) ou painel (confere o JWT de admin dentro da function)
+
+# ---------- FASE 5 ----------
+[functions.ideias-ia]
+verify_jwt = true
+
+[functions.transcrever]
+verify_jwt = true
+
+[functions.estudar-roteiros]
+verify_jwt = true
