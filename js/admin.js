@@ -118,6 +118,29 @@
   }
 
   // ---------------------------------------------------------------------
+  // Confere de verdade se o Instagram continua conectado (a cada abertura)
+  // e mostra uma faixa vermelha no topo se a Meta cortou o acesso.
+  // ---------------------------------------------------------------------
+  async function conferirInstagram() {
+    let r;
+    try { r = await U.chamarFunction("ig-token-refresh", { acao: "verificar" }); } catch { return; }
+    document.getElementById("faixa-instagram")?.remove();
+    if (r?.ok) return;
+    const erro = String(r?.erro || "");
+    const bloqueio = /blocked|bloque|checkpoint|restrict/i.test(erro);
+    const faixa = document.createElement("div");
+    faixa.id = "faixa-instagram";
+    faixa.className = "aviso erro";
+    faixa.style.cssText = "margin-bottom:20px;font-weight:500";
+    faixa.innerHTML = `🚨 <strong>O Instagram está desconectado.</strong> As automações e os números param até resolver. ` +
+      (bloqueio
+        ? "A Meta pediu pra confirmar a conta de desenvolvedor: entre em developers.facebook.com com o perfil dono do app e conclua a confirmação."
+        : `Motivo: ${U.esc(erro || "sem resposta da Meta")}. `) +
+      ' <button class="btn btn-fantasma btn-p" data-ir-aba="configuracoes">⚙️ Ver Instagram</button>';
+    document.querySelector(".conteudo")?.prepend(faixa);
+  }
+
+  // ---------------------------------------------------------------------
   // Início
   // ---------------------------------------------------------------------
   (async function iniciar() {
@@ -127,5 +150,6 @@
     document.body.classList.remove("carregando");
     irPara(U.guardar.ler(CHAVE_ABA, ABA_PADRAO));
     U.carregarRecursos();
+    conferirInstagram();
   })();
 })();
